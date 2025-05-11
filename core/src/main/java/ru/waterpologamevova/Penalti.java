@@ -1,16 +1,27 @@
 package ru.waterpologamevova;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import static ru.waterpologamevova.Main.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.TimeUtils;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Penalti implements Screen {
     //public static final float SCR_WIDTH = 1218, SCR_HEIGHT = 540;
@@ -19,7 +30,7 @@ public class Penalti implements Screen {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Vector3 touch;
-
+    private Texture miach_iz;
     private BitmapFont font; // создание шрифта
 
     private Texture glav_menu_back;
@@ -27,6 +38,8 @@ public class Penalti implements Screen {
     private Texture back_vibor;
     private Texture cel;
     //private Texture zv_mute_kn;
+
+    int k = 0;
 
     private String nadpis_menu; // надпись в меню
     // кнопки в меню
@@ -44,6 +57,7 @@ public class Penalti implements Screen {
     Button_menu cel_kn11;
     Button_menu cel_kn12;
     Button_menu cel_kn13;
+    public int popad_podryat = 0;
 
     public Penalti(Main main) {
         this.main = main;
@@ -78,7 +92,6 @@ public class Penalti implements Screen {
 
     @Override
     public void show() {
-
 
     }
 
@@ -133,6 +146,7 @@ public class Penalti implements Screen {
         }
         back_vibor = new Texture("back.png");
         cel = new Texture("cel.png");
+
 
         ScreenUtils.clear(0.15f, 0.15f, 0.7f, 1f);
         batch.setProjectionMatrix(camera.combined); // помогает подстроить под экран
@@ -190,8 +204,81 @@ public class Penalti implements Screen {
     }
 
     private void udar(int mishen){
-        System.out.println(mishen);
+        int br = 0;
+        k = 0;
+        String mishen_str = "" + mishen;
+        pere_zapis("data/vibrannay_cel.txt", mishen_str);
+        System.out.println(popad_podryat + "  - podrad");
+        String sloznot = new String(readFile());
+        int sloznos_ch = Integer.parseInt(sloznot);
+        float uwu = (popad_podryat/sloznos_ch) + 1;
+        if (uwu >= 11) uwu = 11;
+        for (int i = 0; i < (uwu); i ++){
+            k += 1;
+            int kakie_myachi = MathUtils.random(1, 13);
+            //System.out.println(kakie_myachi + "  - Kakoy myach");
+            if (mishen != kakie_myachi) {
+                br += 1;
+            }
+        }
+        //System.out.println((popad_podryat/sloznos_ch) + 1 + "  - sk");
+
+        if (br == k) {
+            popad_podryat += 1;
+            main.setScreen(main.popal);
+            //System.out.println(popad_podryat + "   - Seria");
+            //System.out.println(mishen + "   - Vibral");
+        }
+        else {
+            popad_podryat = 0;
+            k = 0;
+            main.setScreen(main.ne_popal);
+            //System.out.println("Ne popal");
+        }
     }
+
+
+    /*
+    private void polet_myacha(int mishen){
+        Penalti_myach myach = new Penalti_myach();
+        miach_iz = new Texture("miach.png");
+        myach.dvizenie_in_cel(SCR_WIDTH/2, SCR_HEIGHT/2);
+
+        batch.draw(miach_iz, myach.x, myach.y, myach.width_iz, myach.height_iz,
+            0,0, myach.w_myacha, myach.h_myacha);
+    }*/
+
+
+    private String readFile()
+    {
+        try {
+            FileHandle file = Gdx.files.local("data/" + "sloznost.txt");
+            if (file.exists()) {
+                System.out.println(file.readString());
+                return file.readString();
+
+            }
+        } catch (Exception e) {
+            Gdx.app.error("FILE", "Ошибка чтения: " + "sloznost.txt", e);
+        }
+        return "";
+    }
+    public static void pere_zapis(String filename, String content) {
+        try {
+            // Сначала открываем для очистки
+            new FileWriter(filename, false).close();
+
+            // Затем записываем новый контент
+            FileWriter fw = new FileWriter(filename, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(content);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 }
 

@@ -4,7 +4,6 @@ import static ru.waterpologamevova.Main.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -44,7 +43,7 @@ public class Vibor_rezima implements Screen {
     Button_menu back_menu_kn;
 
     int sk_myachei_v_menu = 33;
-    Dvizenie_myacha_v_menu[] myach = new Dvizenie_myacha_v_menu[sk_myachei_v_menu];
+    Ne_myachi[] myach = new Ne_myachi[sk_myachei_v_menu];
 
     public Vibor_rezima(Main main) {
         this.main = main;
@@ -67,7 +66,7 @@ public class Vibor_rezima implements Screen {
 
         //создание мячей
         for (int i = 0; i < sk_myachei_v_menu; i ++){
-            myach[i] = new Dvizenie_myacha_v_menu();
+            myach[i] = new Ne_myachi();
         }
 
         //кнопки в меню

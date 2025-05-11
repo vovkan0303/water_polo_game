@@ -1,12 +1,9 @@
 package ru.waterpologamevova;
 import static ru.waterpologamevova.Main.*;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -52,9 +49,11 @@ public class Menu implements Screen {
     Button_menu btn_exit;
 
     int sk_myachei_v_menu = 33;
-    Dvizenie_myacha_v_menu[] myach = new Dvizenie_myacha_v_menu[sk_myachei_v_menu];
+    Ne_myachi[] myach = new Ne_myachi[sk_myachei_v_menu];
 
     public Menu(Main main) {
+
+
         this.main = main;
         batch = main.batch;
         camera = main.camera;
@@ -80,7 +79,7 @@ public class Menu implements Screen {
 
         //создание мячей
         for (int i = 0; i < sk_myachei_v_menu; i ++){
-            myach[i] = new Dvizenie_myacha_v_menu();
+            myach[i] = new Ne_myachi();
         }
         // кнопка мута
         btn_mute = new Button_Mute_Music(0,0, 100, 100);
@@ -117,6 +116,10 @@ public class Menu implements Screen {
             if (btn_play.hit(touch.x, touch.y)){
                 Mute_mus();
                 main.setScreen(main.vibor_rezima);
+            }
+            if (btn_settings.hit(touch.x, touch.y)){
+                Mute_mus();
+                main.setScreen(main.settings);
             }
             if (btn_exit.hit(touch.x, touch.y)){
                 Mute_mus();

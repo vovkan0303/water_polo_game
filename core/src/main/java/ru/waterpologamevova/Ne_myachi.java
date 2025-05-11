@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 
 
 
-public class Dvizenie_myacha_v_menu {
+public class Ne_myachi {
     float x, y;
     private float nx; // делаем приватной и только в этом файле мы можем вызвать эту переменную
     private float ny;
@@ -16,7 +16,7 @@ public class Dvizenie_myacha_v_menu {
     int width_iz;
     int height_iz;
 
-    Dvizenie_myacha_v_menu() {
+    Ne_myachi() {
         width_iz = height_iz = MathUtils.random(50, 200);
         this.x = SCR_WIDTH / 2;
         this.y = SCR_HEIGHT / 2;
