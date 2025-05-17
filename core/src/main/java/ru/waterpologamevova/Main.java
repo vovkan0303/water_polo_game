@@ -31,6 +31,7 @@ public class Main extends Game {
     Popal popal;
     Ne_popal ne_popal;
     Settings settings;
+    Standart standart;
 
 
 
@@ -47,19 +48,17 @@ public class Main extends Game {
         font2 = new BitmapFont(Gdx.files.internal("ch_zeltiu.fnt"));
         font3 = new BitmapFont(Gdx.files.internal("3fon_bel_ch.fnt"));
 
-
-
-
-
         menu = new Menu(this);
         vibor_rezima = new Vibor_rezima(this);
         penalti = new Penalti(this);
         popal = new Popal(this);
         ne_popal = new Ne_popal(this);
         settings = new Settings(this);
+        standart = new Standart(this);
 
         new Thread(() -> {
-            createFiles();
+            createFile("sloznost.txt", "5");
+            createFile("vibrannay_cel.txt", "0");
             Gdx.app.postRunnable(() -> {
                 // Этот код выполнится в основном потоке после создания файлов
                 Gdx.app.log("FILES", "Faili ysp sozd");
@@ -69,34 +68,14 @@ public class Main extends Game {
 
         setScreen(menu);
     }
-    private void createFiles() {
-        try {// Для всех платформ используем локальное хранилище приложения
-            FileHandle folder = Gdx.files.local("data/"); // Будет создано в папке приложения
-
-            // Создаем папку, если ее нет
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-
-            // Файл сложности
-            FileHandle fileSlozn = folder.child("sloznost.txt");
-            if (!fileSlozn.exists()) {
-                fileSlozn.writeString("5", false);
-                Gdx.app.log("FILE", "Created: " + fileSlozn.path());
-            }
-            else {
-                Gdx.app.log("Yze", "Est: " + fileSlozn.path());
-                System.out.println("Desktop path: " + Gdx.files.getLocalStoragePath());}
-
-            // Файл выбранной цели
-            FileHandle fileCel = folder.child("vibrannay_cel.txt");
-            if (!fileCel.exists()) {
-                fileCel.writeString("0", false);
-                Gdx.app.log("FILE", "Created: " + fileCel.path());
-            }
-
+    public static boolean createFile(String fileName, String content) {
+        try {
+            FileHandle file = Gdx.files.local(fileName);
+            file.writeString(content, false); // false - перезаписать файл
+            return true;
         } catch (Exception e) {
-            Gdx.app.error("FILE", "Error creating files", e);
+            Gdx.app.error("FileUtils", "Ошибка создания файла", e);
+            return false;
         }
     }
 

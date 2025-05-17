@@ -46,6 +46,7 @@ public class Popal implements Screen {
     private Texture vratar_iz;
     private Texture lev_ruk;
     private Texture prav_ruk;
+    private Texture volni_iz;
     //private Texture zv_mute_kn;
     long Timer_Start_popal;
     private String nadpis_menu; // надпись в меню
@@ -65,6 +66,7 @@ public class Popal implements Screen {
     Button_menu cel_kn12;
     Button_menu cel_kn13;
     Button_menu popal_kn;
+    Button_menu volni_kn;
     Vratar_in_penalti vratar_kn;
     Vratar_in_penalti prav_ruk_kn;
     Vratar_in_penalti lev_ruk_kn;
@@ -89,7 +91,7 @@ public class Popal implements Screen {
 
 
 
-
+        volni_iz = new Texture("volni.png");
         glav_menu_back = new Texture("vorota.png");
         popal = new Texture("popal_tabl.png");
         prav_ruk = new Texture("ruka_prav.png");
@@ -115,7 +117,11 @@ public class Popal implements Screen {
         cel_kn13 = new Button_menu((SCR_WIDTH / 2) + 375 - 150, SCR_HEIGHT - 500, 150, 150);
         popal_kn = new Button_menu(SCR_WIDTH/2 - 250, SCR_HEIGHT - 500, 500, 400);
         float nvrt = 1.3f;
-
+        volni_kn = new Button_menu(0,0, SCR_WIDTH, 150);
+        miach_iz = new Texture("miach.png");
+        vratar_iz = new Texture("vratar_v_plavkah.png");
+        back_vibor = new Texture("back.png");
+        cel = new Texture("cel.png");
 
     }
 
@@ -124,8 +130,9 @@ public class Popal implements Screen {
         float width_iz = 108 * 1.6f;
         stop_vr = false;
         Timer_Start_popal = TimeUtils.millis();
-        String misen = new String(readFile());
-        System.out.println("" + misen);
+        String misen = new String(readFile("vibrannay_cel.txt"));
+
+
         if (("" + misen).equals("1")){
             cel_x = 40;
             cel_y = SCR_HEIGHT-200;
@@ -191,9 +198,10 @@ public class Popal implements Screen {
             cel_y = SCR_HEIGHT-500;
             x_myacha = width_iz + 15;
         }
+
+
         misen_popal = Integer.valueOf("" + misen);
-        System.out.println(cel_x);
-        System.out.println(cel_y);
+
 
 
 
@@ -209,10 +217,7 @@ public class Popal implements Screen {
     //float r;
     @Override
     public void render(float delta) {
-        miach_iz = new Texture("miach.png");
-        vratar_iz = new Texture("vratar_v_plavkah.png");
-        back_vibor = new Texture("back.png");
-        cel = new Texture("cel.png");
+
 
 
 
@@ -274,7 +279,7 @@ public class Popal implements Screen {
         prav_ruk_kn.popal(misen_popal, stop_vr);
         lev_ruk_kn.popal(misen_popal, stop_vr);
 
-
+        batch.draw(volni_iz, volni_kn.x, volni_kn.y, volni_kn.width, volni_kn.height);
         //batch.draw(miach_iz, myach.x, myach.y, myach.width_iz, myach.height_iz);
         myach.dvizenie_in_cel();
         batch.draw(
@@ -323,55 +328,50 @@ public class Popal implements Screen {
         popal.dispose();
         back_vibor.dispose();
         miach_iz.dispose();
+        volni_iz.dispose();
     }
     private String Delay_vremya(long Timer){
         long sec = Timer/1000%60;
         if (sec >= 9){
             main.setScreen(main.penalti);
             Timer_Start_popal = TimeUtils.millis();
-            pere_zapis("data/vibrannay_cel.txt", "0");
+            overwriteFile("vibrannay_cel.txt", "0");
         }
         return sec + "";
     }
     private String Delay_vremya2(long Timer){
         long sec = Timer/1000%60;
-        if (sec >= 6){
+        if (sec >= 7.3f){
             batch.draw(popal, popal_kn.x, popal_kn.y, popal_kn.width, popal_kn.height);
 
         }
-        if (sec >= 5){
+        if (sec >= 5.5f){
             stop_vr = true;
         }
         return sec + "";
     }
 
-    private String readFile()
-    {
+    public static String readFile(String fileName) {
         try {
-            FileHandle file = Gdx.files.local("data/" + "vibrannay_cel.txt");
-            if (file.exists()) {
-                System.out.println(file.readString() + "- vibr cell");
-                return file.readString();
+            FileHandle file = Gdx.files.local(fileName);
+            if (!file.exists()) {
+                Gdx.app.error("FileUtils", "Файл не найден: " + fileName);
+                return null;
             }
+            return file.readString();
         } catch (Exception e) {
-            Gdx.app.error("FILE", "Ошибка чтения: " + "vibrannay_cel.txt", e);
+            Gdx.app.error("FileUtils", "Ошибка чтения файла", e);
+            return null;
         }
-        return "";
     }
-
-
-    public static void pere_zapis(String filename, String content) {
+    public static boolean overwriteFile(String fileName, String newContent) {
         try {
-            // Сначала открываем для очистки
-            new FileWriter(filename, false).close();
-
-            // Затем записываем новый контент
-            FileWriter fw = new FileWriter(filename, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(content);
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            FileHandle file = Gdx.files.local(fileName);
+            file.writeString(newContent, false); // false - перезаписать
+            return true;
+        } catch (Exception e) {
+            Gdx.app.error("FileUtils", "Ошибка перезаписи файла", e);
+            return false;
         }
     }
 }

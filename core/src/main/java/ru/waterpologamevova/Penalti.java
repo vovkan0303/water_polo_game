@@ -67,7 +67,8 @@ public class Penalti implements Screen {
         font = main.font2;
 
         glav_menu_back = new Texture("vorota.png");
-
+        back_vibor = new Texture("back.png");
+        cel = new Texture("cel.png");
 
 
         //Создание текста
@@ -144,8 +145,7 @@ public class Penalti implements Screen {
                 udar(13);
             }
         }
-        back_vibor = new Texture("back.png");
-        cel = new Texture("cel.png");
+
 
 
         ScreenUtils.clear(0.15f, 0.15f, 0.7f, 1f);
@@ -201,15 +201,17 @@ public class Penalti implements Screen {
         font.dispose();
         cel.dispose();
         back_vibor.dispose();
+        miach_iz.dispose();
     }
 
     private void udar(int mishen){
         int br = 0;
         k = 0;
         String mishen_str = "" + mishen;
-        pere_zapis("data/vibrannay_cel.txt", mishen_str);
-        System.out.println(popad_podryat + "  - podrad");
-        String sloznot = new String(readFile());
+        overwriteFile("vibrannay_cel.txt", mishen_str);
+
+
+        String sloznot = new String(readFile("vibrannay_cel.txt"));
         int sloznos_ch = Integer.parseInt(sloznot);
         float uwu = (popad_podryat/sloznos_ch) + 1;
         if (uwu >= 11) uwu = 11;
@@ -249,35 +251,29 @@ public class Penalti implements Screen {
     }*/
 
 
-    private String readFile()
-    {
+    public static String readFile(String fileName) {
         try {
-            FileHandle file = Gdx.files.local("data/" + "sloznost.txt");
-            if (file.exists()) {
-                System.out.println(file.readString());
-                return file.readString();
-
+            FileHandle file = Gdx.files.local(fileName);
+            if (!file.exists()) {
+                Gdx.app.error("FileUtils", "Файл не найден: " + fileName);
+                return null;
             }
+            return file.readString();
         } catch (Exception e) {
-            Gdx.app.error("FILE", "Ошибка чтения: " + "sloznost.txt", e);
+            Gdx.app.error("FileUtils", "Ошибка чтения файла", e);
+            return null;
         }
-        return "";
     }
-    public static void pere_zapis(String filename, String content) {
+    public static boolean overwriteFile(String fileName, String newContent) {
         try {
-            // Сначала открываем для очистки
-            new FileWriter(filename, false).close();
-
-            // Затем записываем новый контент
-            FileWriter fw = new FileWriter(filename, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(content);
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            FileHandle file = Gdx.files.local(fileName);
+            file.writeString(newContent, false); // false - перезаписать
+            return true;
+        } catch (Exception e) {
+            Gdx.app.error("FileUtils", "Ошибка перезаписи файла", e);
+            return false;
         }
     }
-
 
 
 }

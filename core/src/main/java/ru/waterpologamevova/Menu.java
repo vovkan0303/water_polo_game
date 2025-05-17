@@ -53,6 +53,9 @@ public class Menu implements Screen {
 
     public Menu(Main main) {
 
+        play_kn = new Texture("play_kn.png");
+        settings_kn = new Texture("nastroiki.png");
+        exit_kn = new Texture("exit.png");
 
         this.main = main;
         batch = main.batch;
@@ -101,6 +104,7 @@ public class Menu implements Screen {
 
     @Override
     public void render(float delta) {
+        zv_vkl_kn = new Texture(ris);
         // касания
         if (Gdx.input.justTouched()){
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -128,10 +132,7 @@ public class Menu implements Screen {
 
         }
         //кнопки
-        zv_vkl_kn = new Texture(ris);
-        play_kn = new Texture("play_kn.png");
-        settings_kn = new Texture("nastroiki.png");
-        exit_kn = new Texture("exit.png");
+
 
         ScreenUtils.clear(0.15f, 0.15f, 0.7f, 1f);
         batch.setProjectionMatrix(camera.combined); // помогает подстроить под экран
@@ -177,7 +178,6 @@ public class Menu implements Screen {
 
     @Override
     public void hide() {
-
     }
 
     @Override

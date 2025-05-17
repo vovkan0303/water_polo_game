@@ -58,7 +58,9 @@ public class Vibor_rezima implements Screen {
         // создание картинок
         miach_iz = new Texture("miach.png");
         glav_menu_back = new Texture("glav_m.png");
-
+        klassika = new Texture("klassika.png");
+        penalti = new Texture("penalti.png");
+        back_menu = new Texture("back.png");
 
 
         //Создание текста
@@ -97,11 +99,12 @@ public class Vibor_rezima implements Screen {
             if (penalti_kn.hit(touch.x, touch.y)){
                 main.setScreen(main.penalti);
             }
+            if (klassika_kn.hit(touch.x, touch.y)){
+                main.setScreen(main.standart);
+            }
 
         }
-        klassika = new Texture("klassika.png");
-        penalti = new Texture("penalti.png");
-        back_menu = new Texture("back.png");
+
 
         ScreenUtils.clear(0.15f, 0.15f, 0.7f, 1f);
         batch.setProjectionMatrix(camera.combined); // помогает подстроить под экран

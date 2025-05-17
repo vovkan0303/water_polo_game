@@ -34,6 +34,7 @@ public class Ne_myachi {
     }
 
 
+
     public boolean flip_mach_x(){
         return nx < 0;
     }

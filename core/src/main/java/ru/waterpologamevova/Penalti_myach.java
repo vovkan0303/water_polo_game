@@ -41,19 +41,19 @@ public class Penalti_myach {
             this.y = -30;
             this.rast_x = cel_x-x + 20;
             this.rast_y = cel_y-y + 10;
-            skor_dlya_pen_x = Math.abs(rast_x)/(60 *7);
-            skor_dlya_pen_y = Math.abs(rast_y)/(60 * 7);
+            skor_dlya_pen_x = Math.abs(rast_x)/(60 *7.5f);
+            skor_dlya_pen_y = Math.abs(rast_y)/(60 * 7.5f);
             if (rast_x < 0) skor_dlya_pen_x = -1 * skor_dlya_pen_x;
             if (rast_y < 0) skor_dlya_pen_y = -skor_dlya_pen_y;
         }
 
 
         public void dvizenie_in_cel(){
-            x += skor_dlya_pen_x;
-            y += skor_dlya_pen_y;
+            x += skor_dlya_pen_x/1.7f;
+            y += skor_dlya_pen_y/1.7f;
 
-            rast_x -= skor_dlya_pen_x;
-            rast_y -= skor_dlya_pen_y;
+            rast_x -= skor_dlya_pen_x/1.7f;
+            rast_y -= skor_dlya_pen_y/1.7f;
 
 
             //System.out.println(cel_x);
@@ -65,12 +65,12 @@ public class Penalti_myach {
                 skor_dlya_pen_x = 0;
                 rotation = 0;
             }
-            else width_iz = width_iz - width_iz/960;
+            else width_iz = width_iz - width_iz/2000;
             if (rast_y >= -3 && rast_y <= 3) {
                 skor_dlya_pen_y = 0;
                 rotation = 0;
             }
-            else height_iz = height_iz - height_iz/960;
+            else height_iz = height_iz - height_iz/2000;
 
 
 
@@ -84,32 +84,27 @@ public class Penalti_myach {
         }
 
 
-    private String readFile()
-    {
+    public static String readFile(String fileName) {
         try {
-            FileHandle file = Gdx.files.local("data/" + "vibrannay_cel.txt");
-            if (file.exists()) {
-                return file.readString();
+            FileHandle file = Gdx.files.local(fileName);
+            if (!file.exists()) {
+                Gdx.app.error("FileUtils", "Файл не найден: " + fileName);
+                return null;
             }
+            return file.readString();
         } catch (Exception e) {
-            Gdx.app.error("FILE", "Ошибка чтения: " + "vibrannay_cel.txt", e);
+            Gdx.app.error("FileUtils", "Ошибка чтения файла", e);
+            return null;
         }
-        return "";
     }
-
-
-    public static void pere_zapis(String filename, String content) {
+    public static boolean overwriteFile(String fileName, String newContent) {
         try {
-            // Сначала открываем для очистки
-            new FileWriter(filename, false).close();
-
-            // Затем записываем новый контент
-            FileWriter fw = new FileWriter(filename, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(content);
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            FileHandle file = Gdx.files.local(fileName);
+            file.writeString(newContent, false); // false - перезаписать
+            return true;
+        } catch (Exception e) {
+            Gdx.app.error("FileUtils", "Ошибка перезаписи файла", e);
+            return false;
         }
     }
 

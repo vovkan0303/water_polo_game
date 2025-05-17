@@ -67,7 +67,7 @@ public class Brosok_in_penalti implements Screen {
 
         glav_menu_back = new Texture("vorota.png");
         popal = new Texture("popal_tabl.png");
-
+        cel = new Texture("cel.png");
         //Создание текста
         //font = new BitmapFont(Gdx.files.internal("srift_menu.fnt"));
 
@@ -97,7 +97,6 @@ public class Brosok_in_penalti implements Screen {
     @Override
     public void render(float delta) {
 
-        cel = new Texture("cel.png");
 
         Delay_vremya(TimeUtils.millis() - Timer_Start_popal);
 
@@ -152,6 +151,7 @@ public class Brosok_in_penalti implements Screen {
         font.dispose();
         cel.dispose();
         popal.dispose();
+
 
     }
     private String Delay_vremya(long Timer){

@@ -39,6 +39,10 @@ public class Ne_popal implements Screen {
     private Texture cel;
     private Texture ne_popal;
     private Texture vratar_iz;
+    private Texture lev_ruk;
+    private Texture prav_ruk;
+    private Texture volni_iz;
+
     //private Texture zv_mute_kn;
     long Timer_Start_nepopal;
     private String nadpis_menu; // надпись в меню
@@ -58,14 +62,18 @@ public class Ne_popal implements Screen {
     Button_menu cel_kn12;
     Button_menu cel_kn13;
     Button_menu ne_popal_kn;
+    Button_menu volni_kn;
+    Vratar_in_penalti vratar_kn;
+    Vratar_in_penalti prav_ruk_kn;
+    Vratar_in_penalti lev_ruk_kn;
     public float cel_x, cel_y;
     float rotation = 0;
     float x_myacha;
-
-
-
+    boolean stop_vr;
+    int misen_nepopal;
 
     public Penalti_myach myach;
+
 
     public Ne_popal(Main main) {
         this.main = main;
@@ -73,6 +81,11 @@ public class Ne_popal implements Screen {
         camera = main.camera;
         touch = main.touch;
         font = main.font2;
+
+
+        prav_ruk = new Texture("ruka_prav.png");
+        lev_ruk = new Texture("ruka_lev.png");
+        volni_iz = new Texture("volni.png");
 
         glav_menu_back = new Texture("vorota.png");
         ne_popal = new Texture("ne_popal.png");
@@ -95,85 +108,101 @@ public class Ne_popal implements Screen {
         cel_kn11 = new Button_menu((SCR_WIDTH / 2) + 375 - 150, SCR_HEIGHT - 300, 150, 150);
         cel_kn12 = new Button_menu((SCR_WIDTH / 2) - 375, SCR_HEIGHT - 500, 150, 150);
         cel_kn13 = new Button_menu((SCR_WIDTH / 2) + 375 - 150, SCR_HEIGHT - 500, 150, 150);
-        ne_popal_kn = new Button_menu(SCR_WIDTH/2 - 250, SCR_HEIGHT - 500, 500, 400);
+        ne_popal_kn = new Button_menu(SCR_WIDTH / 2 - 250, SCR_HEIGHT - 500, 500, 400);
+        volni_kn = new Button_menu(0,0, SCR_WIDTH, 150);
+
+        back_vibor = new Texture("back.png");
+        cel = new Texture("cel.png");
+        miach_iz = new Texture("miach.png");
+        vratar_iz = new Texture("vratar_v_plavkah.png");
 
     }
 
     @Override
     public void show() {
         float width_iz = 108 * 1.6f;
-
+        stop_vr = false;
         Timer_Start_nepopal = TimeUtils.millis();
-        String misen = new String(readFile());
-        System.out.println("" + misen);
-        if (("" + misen).equals("1")){
+
+        String misen = new String(readFile("vibrannay_cel.txt"));
+
+
+        if (("" + misen).equals("1")) {
             cel_x = 40;
-            cel_y = SCR_HEIGHT-200;
+            cel_y = SCR_HEIGHT - 200;
             x_myacha = SCR_WIDTH - width_iz;
         }
-        if (("" + misen).equals("2")){
-            cel_x = (SCR_WIDTH/2)-75;
-            cel_y = SCR_HEIGHT-200;
+        if (("" + misen).equals("2")) {
+            cel_x = (SCR_WIDTH / 2) - 75;
+            cel_y = SCR_HEIGHT - 200;
             x_myacha = SCR_WIDTH - width_iz;
         }
-        if (("" + misen).equals("3")){
-            cel_x = SCR_WIDTH-190;
-            cel_y = SCR_HEIGHT-200;
+        if (("" + misen).equals("3")) {
+            cel_x = SCR_WIDTH - 190;
+            cel_y = SCR_HEIGHT - 200;
             x_myacha = width_iz + 15;
         }
-        if (("" + misen).equals("4")){
+        if (("" + misen).equals("4")) {
             cel_x = 40;
-            cel_y = SCR_HEIGHT-375;
+            cel_y = SCR_HEIGHT - 375;
             x_myacha = SCR_WIDTH - width_iz;
         }
-        if (("" + misen).equals("5")){
-            cel_x = (SCR_WIDTH/2)-165;
-            cel_y = SCR_HEIGHT-375;
+        if (("" + misen).equals("5")) {
+            cel_x = (SCR_WIDTH / 2) - 165;
+            cel_y = SCR_HEIGHT - 375;
             x_myacha = SCR_WIDTH - width_iz;
         }
-        if (("" + misen).equals("6")){
-            cel_x = (SCR_WIDTH/2)+15;
-            cel_y =  SCR_HEIGHT-375;
+        if (("" + misen).equals("6")) {
+            cel_x = (SCR_WIDTH / 2) + 15;
+            cel_y = SCR_HEIGHT - 375;
             x_myacha = width_iz + 15;
         }
-        if (("" + misen).equals("7")){
-            cel_x = SCR_WIDTH-190;
-            cel_y =  SCR_HEIGHT-375;
+        if (("" + misen).equals("7")) {
+            cel_x = SCR_WIDTH - 190;
+            cel_y = SCR_HEIGHT - 375;
             x_myacha = width_iz + 15;
         }
-        if (("" + misen).equals("8")){
+        if (("" + misen).equals("8")) {
             cel_x = 40;
-            cel_y =  SCR_HEIGHT-535;
+            cel_y = SCR_HEIGHT - 535;
             x_myacha = SCR_WIDTH - width_iz;
         }
-        if (("" + misen).equals("9")){
-            cel_x = SCR_WIDTH-190;
-            cel_y =  SCR_HEIGHT-535;
+        if (("" + misen).equals("9")) {
+            cel_x = SCR_WIDTH - 190;
+            cel_y = SCR_HEIGHT - 535;
             x_myacha = width_iz + 15;
         }
-        if (("" + misen).equals("10")){
-            cel_x = (SCR_WIDTH/2)-375;
-            cel_y =  SCR_HEIGHT-300;
+        if (("" + misen).equals("10")) {
+            cel_x = (SCR_WIDTH / 2) - 375;
+            cel_y = SCR_HEIGHT - 300;
             x_myacha = SCR_WIDTH - width_iz;
         }
-        if (("" + misen).equals("11")){
-            cel_x = (SCR_WIDTH/2)+375-150;
-            cel_y = SCR_HEIGHT-300;
+        if (("" + misen).equals("11")) {
+            cel_x = (SCR_WIDTH / 2) + 375 - 150;
+            cel_y = SCR_HEIGHT - 300;
             x_myacha = width_iz + 15;
         }
-        if (("" + misen).equals("12")){
-            cel_x = (SCR_WIDTH/2)-375;
-            cel_y = SCR_HEIGHT-500;
+        if (("" + misen).equals("12")) {
+            cel_x = (SCR_WIDTH / 2) - 375;
+            cel_y = SCR_HEIGHT - 500;
             x_myacha = SCR_WIDTH - width_iz;
         }
-        if (("" + misen).equals("13")){
-            cel_x =  (SCR_WIDTH/2)+375-150;
-            cel_y = SCR_HEIGHT-500;
+        if (("" + misen).equals("13")) {
+            cel_x = (SCR_WIDTH / 2) + 375 - 150;
+            cel_y = SCR_HEIGHT - 500;
             x_myacha = width_iz + 15;
         }
 
-        System.out.println(cel_x);
-        System.out.println(cel_y);
+
+        misen_nepopal = Integer.valueOf("" + misen);
+
+
+
+        vratar_kn = new Vratar_in_penalti(0, 3, 0, 0);
+        lev_ruk_kn = new Vratar_in_penalti(1, 3, 0, 0);
+        prav_ruk_kn = new Vratar_in_penalti(2, 3, 0, 0);
+
+
         myach = new Penalti_myach(cel_x, cel_y, x_myacha);
 
 
@@ -181,12 +210,8 @@ public class Ne_popal implements Screen {
 
     @Override
     public void render(float delta) {
-        back_vibor = new Texture("back.png");
-        cel = new Texture("cel.png");
-        miach_iz = new Texture("miach.png");
-        vratar_iz = new Texture("vratar_v_plavkah.png");
 
-        Delay_vremya(TimeUtils.millis() - Timer_Start_nepopal);
+
 
         ScreenUtils.clear(0.15f, 0.15f, 0.7f, 1f);
         batch.setProjectionMatrix(camera.combined); // помогает подстроить под экран
@@ -213,15 +238,47 @@ public class Ne_popal implements Screen {
         batch.draw(cel, cel_kn12.x, cel_kn12.y, cel_kn1.width, cel_kn1.height);
         batch.draw(cel, cel_kn13.x, cel_kn13.y, cel_kn1.width, cel_kn1.height);
          */
-        Delay_vremya2(TimeUtils.millis() - Timer_Start_nepopal);
 
 
+        batch.draw(vratar_iz, vratar_kn.x_vr, vratar_kn.y_vr,  // Позиция (x, y)
+            vratar_kn.width_vr / 2, 90,  // Точка вращения (центр изображения)
+            vratar_kn.width_vr, vratar_kn.height_vr,     // Размеры
+            1, 1,             // Масштаб
+            vratar_kn.rotation_vr,          // Угол вращения (в градусах)
+            0, 0,             // Область текстуры (srcX, srcY)
+            446, 598, // Размеры текстуры
+            false, false       // Отразить по X/Y?
+        );
+        batch.draw(lev_ruk, lev_ruk_kn.x_lev, lev_ruk_kn.y_lev,             // Позиция (x, y)
+            lev_ruk_kn.width_lev - 57, 52,  // Точка вращения (центр изображения)
+            lev_ruk_kn.width_lev, lev_ruk_kn.height_lev,     // Размеры
+            1, 1,             // Масштаб
+            lev_ruk_kn.rotation_lev,          // Угол вращения (в градусах)
+            0, 0,             // Область текстуры (srcX, srcY)
+            400, 400, // Размеры текстуры
+            false, false       // Отразить по X/Y?
+        );
+        batch.draw(prav_ruk, prav_ruk_kn.x_prav, prav_ruk_kn.y_prav,             // Позиция (x, y)
+            57, 52,  // Точка вращения (центр изображения)
+            prav_ruk_kn.width_prav, prav_ruk_kn.height_prav,     // Размеры
+            1, 1,             // Масштаб
+            prav_ruk_kn.rotation_prav,          // Угол вращения (в градусах)
+            0, 0,             // Область текстуры (srcX, srcY)
+            400, 400, // Размеры текстуры
+            false, false       // Отразить по X/Y?
+        );
+
+        vratar_kn.nepopal(misen_nepopal, stop_vr);
+        prav_ruk_kn.nepopal(misen_nepopal, stop_vr);
+        lev_ruk_kn.nepopal(misen_nepopal, stop_vr);
+
+        batch.draw(volni_iz, volni_kn.x, volni_kn.y, volni_kn.width, volni_kn.height);
         //batch.draw(miach_iz, myach.x, myach.y, myach.width_iz, myach.height_iz);
         myach.dvizenie_in_cel();
         batch.draw(
             miach_iz,
             myach.x, myach.y,             // Позиция (x, y)
-            myach.width_iz/2, myach.height_iz/2,  // Точка вращения (центр изображения)
+            myach.width_iz / 2, myach.height_iz / 2,  // Точка вращения (центр изображения)
             myach.width_iz, myach.height_iz,     // Размеры
             1, 1,             // Масштаб
             rotation,          // Угол вращения (в градусах)
@@ -230,7 +287,8 @@ public class Ne_popal implements Screen {
             false, false       // Отразить по X/Y?
         );
         rotation += myach.rotation;
-
+        Delay_vremya2(TimeUtils.millis() - Timer_Start_nepopal);
+        Delay_vremya(TimeUtils.millis() - Timer_Start_nepopal);
         batch.end();
     }
 
@@ -258,54 +316,64 @@ public class Ne_popal implements Screen {
     public void dispose() {
         batch.dispose();
         glav_menu_back.dispose();
+        vratar_iz.dispose();
+        lev_ruk.dispose();
+        prav_ruk.dispose();
         font.dispose();
         cel.dispose();
         ne_popal.dispose();
         back_vibor.dispose();
+        volni_iz.dispose();
+        miach_iz.dispose();
     }
-    private String Delay_vremya(long Timer){
-        long sec = Timer/1000%60;
-        if (sec >= 8){
+
+    private String Delay_vremya(long Timer) {
+        long sec = Timer / 1000 % 60;
+        if (sec >= 9) {
             main.setScreen(main.penalti);
             Timer_Start_nepopal = TimeUtils.millis();
-            pere_zapis("data/vibrannay_cel.txt", "0");
-        }
-        return sec + "";
-    }
-    private String Delay_vremya2(long Timer){
-        long sec = Timer/1000%60;
-        if (sec >= 5){
-            batch.draw(ne_popal, ne_popal_kn.x, ne_popal_kn.y, ne_popal_kn.width, ne_popal_kn.height);
+            overwriteFile("vibrannay_cel.txt", "0");
         }
         return sec + "";
     }
 
-    private String readFile()
-    {
-        try {
-            FileHandle file = Gdx.files.local("data/" + "vibrannay_cel.txt");
-            if (file.exists()) {
-                return file.readString();
+    private String Delay_vremya2(long Timer) {
+        long sec = Timer / 1000 % 60;
+        if (sec >= 4) {
+            if (sec >= 7.3) {
+                batch.draw(ne_popal, ne_popal_kn.x, ne_popal_kn.y, ne_popal_kn.width, ne_popal_kn.height);
+
             }
-        } catch (Exception e) {
-            Gdx.app.error("FILE", "Ошибка чтения: " + "vibrannay_cel.txt", e);
+            if (sec >= 5) {
+                stop_vr = true;
+            }
+            return sec + "";
         }
         return "";
     }
-
-
-    public static void pere_zapis(String filename, String content) {
+    public static String readFile(String fileName) {
         try {
-            // Сначала открываем для очистки
-            new FileWriter(filename, false).close();
-
-            // Затем записываем новый контент
-            FileWriter fw = new FileWriter(filename, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(content);
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            FileHandle file = Gdx.files.local(fileName);
+            if (!file.exists()) {
+                Gdx.app.error("FileUtils", "Файл не найден: " + fileName);
+                return null;
+            }
+            return file.readString();
+        } catch (Exception e) {
+            Gdx.app.error("FileUtils", "Ошибка чтения файла", e);
+            return null;
+        }
+    }
+    public static boolean overwriteFile(String fileName, String newContent) {
+        try {
+            FileHandle file = Gdx.files.local(fileName);
+            file.writeString(newContent, false); // false - перезаписать
+            return true;
+        } catch (Exception e) {
+            Gdx.app.error("FileUtils", "Ошибка перезаписи файла", e);
+            return false;
         }
     }
 }
+
+
