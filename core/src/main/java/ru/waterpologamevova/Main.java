@@ -24,6 +24,7 @@ public class Main extends Game {
     public BitmapFont font;
     public BitmapFont font2;
     public BitmapFont font3;
+    public BitmapFont font4;
     public int ch;
     Menu menu;
     Vibor_rezima vibor_rezima;
@@ -32,6 +33,8 @@ public class Main extends Game {
     Ne_popal ne_popal;
     Settings settings;
     Standart standart;
+    Parametri_igri parametri_igri;
+    Vibor_poz vibor_poz;
 
 
 
@@ -47,6 +50,7 @@ public class Main extends Game {
         font = new BitmapFont(Gdx.files.internal("srift_menu.fnt"));
         font2 = new BitmapFont(Gdx.files.internal("ch_zeltiu.fnt"));
         font3 = new BitmapFont(Gdx.files.internal("3fon_bel_ch.fnt"));
+        font4 = new BitmapFont(Gdx.files.internal("nadpis_in_param.fnt"));
 
         menu = new Menu(this);
         vibor_rezima = new Vibor_rezima(this);
@@ -55,10 +59,17 @@ public class Main extends Game {
         ne_popal = new Ne_popal(this);
         settings = new Settings(this);
         standart = new Standart(this);
+        parametri_igri = new Parametri_igri(this);
+        vibor_poz = new Vibor_poz(this);
+
 
         new Thread(() -> {
             createFile("sloznost.txt", "5");
             createFile("vibrannay_cel.txt", "0");
+            createFile("cvet_kom.txt", "1");
+            createFile("nomer_igroka.txt", "2");
+            createFile("kol_per.txt", "1");
+            createFile("poz_igr.txt", "0");
             Gdx.app.postRunnable(() -> {
                 // Этот код выполнится в основном потоке после создания файлов
                 Gdx.app.log("FILES", "Faili ysp sozd");

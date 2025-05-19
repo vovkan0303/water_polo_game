@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Igrovoi_myach {
     public float x, y;
     public float width, height;
-    public int u_kogo;       //sam = 0, u_igroka = 1, u_npc = 2;
+    public int u_kogo;       //sam = 0, u_igroka = 1, u_npc = 2; gol = 3; auto_gol = 4;
     public float vx, vy;
     public float vx_bud, vy_bud;
 
@@ -51,7 +51,6 @@ public class Igrovoi_myach {
         if (u_kogo == 2){
 
         }
-
         x += vx;
         y += vy;
     }
@@ -63,22 +62,24 @@ public class Igrovoi_myach {
     }
 
     public void dvizenie(){
-        if (x + width >= SCR_WIDTH || x <= 0) vx = -vx;
-        if (x<530 && x + width > (530 + 380)){
+        if (x + width >= SCR_WIDTH || x <= 0) {
+            vx = -vx;
+        }
+        if ((x < 470 || x > 560 + 200) &&((y < 180) || (y + width > WORLD_HEIHGT-180))){
             vy = -vy;
         }
-        else{
-            if ((y + height >= WORLD_HEIHGT || y <= 0) || ( x>530 && x + width < (530 + 380) && y > 0 && y + height < 150 ) || ( x>530 && x + width < (530 + 380) && y + height + 70 > WORLD_HEIHGT))
-            {
-                vy = -vy;
+        else {
+            if (y + width < 150) {
                 vy = 0;
                 vx = 0;
+                u_kogo = 4;
             }
-            if (x + width >= (530 + 250) || x <= 450){
-                vx = -vx;
+            else if ((y + width + 30 > WORLD_HEIHGT)) {
+                vy = 0;
+                vx = 0;
+                u_kogo = 3;
             }
         }
-        //if (y + height >= WORLD_HEIHGT - 180 || y <= 180) vy = -vy;
 
     }
 

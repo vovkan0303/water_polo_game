@@ -100,7 +100,7 @@ public class Vibor_rezima implements Screen {
                 main.setScreen(main.penalti);
             }
             if (klassika_kn.hit(touch.x, touch.y)){
-                main.setScreen(main.standart);
+                main.setScreen(main.parametri_igri);
             }
 
         }
