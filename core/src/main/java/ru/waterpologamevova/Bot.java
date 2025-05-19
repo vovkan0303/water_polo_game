@@ -1,5 +1,6 @@
 package ru.waterpologamevova;
 
+import static ru.waterpologamevova.Main.SCR_HEIGHT;
 import static ru.waterpologamevova.Main.SCR_WIDTH;
 import static ru.waterpologamevova.Standart.WORLD_HEIHGT;
 
@@ -9,13 +10,15 @@ public class Bot {
     public float x, y;
     public float width, height;
     public boolean side;
-    float vx;
-    float vy;
+    float vx = 1;
+    float vy = 0.25f;
+    int pos; //0-6
 
-    public Bot (float x,float y) {
+    public Bot (float x,float y, int pos_bot) {
         width = height = 100;
         this.x = x;
         this.y = y;
+        pos = pos_bot;
     }
 
     public float scrX(){
@@ -30,10 +33,25 @@ public class Bot {
         vx = 0;
         vy = 0;
     }
+    public void dviz_vrat(int kto){
+        if (x <= 450 || x >=800){
+            vx = -vx;
+        }
+        if (kto == 1){
+            if (y < SCR_HEIGHT/2 -50 || y >= SCR_HEIGHT/2 + 50){
+                vy = -vy;
+            }
+        }
+        else {
+            if (y < WORLD_HEIHGT - SCR_HEIGHT/2 -50 || y >= WORLD_HEIHGT - SCR_HEIGHT/2 + 50){
+                vy = -vy;
+            }
+        }
+
+
+    }
     public void move() {
         outOfScreen();
-        if (vx >= 2.5f) vx = 2.5f;
-        if (vy >= 2.5f) vy = 2.5f;
         x += vx;
         y += vy;
     }
@@ -45,14 +63,6 @@ public class Bot {
         if(x>SCR_WIDTH-width/2) {
             vx = 0;
             x = SCR_WIDTH-width/2;
-        }
-        if(y< 180 + height/2) {
-            vy = 0;
-            y = 180 + height/2;
-        }
-        if(y + 180>WORLD_HEIHGT-height/2) {
-            vy = 0;
-            y   = WORLD_HEIHGT-height/2 - 180;
         }
     }
 

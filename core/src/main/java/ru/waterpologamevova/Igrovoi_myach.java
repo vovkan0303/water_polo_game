@@ -60,21 +60,25 @@ public class Igrovoi_myach {
         this.vx = vx;
         this.vy = vy;
     }
+    public void stop(){
+        vx = 0;
+        vy = 0;
+    }
 
     public void dvizenie(){
         if (x + width >= SCR_WIDTH || x <= 0) {
             vx = -vx;
         }
-        if ((x < 470 || x > 560 + 200) &&((y < 180) || (y + width > WORLD_HEIHGT-180))){
+        if ((x <= 440 || x + width >= 770) &&((y <= 180) || (y + height >= WORLD_HEIHGT-180))){
             vy = -vy;
         }
         else {
-            if (y + width < 150) {
+            if (y + height <= 150) {
                 vy = 0;
                 vx = 0;
                 u_kogo = 4;
             }
-            else if ((y + width + 30 > WORLD_HEIHGT)) {
+            else if ((y + height + 50 >= WORLD_HEIHGT)) {
                 vy = 0;
                 vx = 0;
                 u_kogo = 3;
@@ -107,7 +111,10 @@ public class Igrovoi_myach {
     }
 
 
-
+    public void restart(){
+        x = SCR_WIDTH/3;
+        y = SCR_HEIGHT/2;
+    }
 
     public float scrX(){
         return x-width/2;

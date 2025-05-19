@@ -70,6 +70,10 @@ public class Player {
             y   = WORLD_HEIHGT-height/2 - 180;
         }
     }
+    public void restart(){
+        x = 8 * SCR_WIDTH/9f + 70;
+        y = SCR_HEIGHT/2;
+    }
 
     public void touchJoystick(Vector3 t, Jostik j){
         nx = (t.x-j.x)/50;
