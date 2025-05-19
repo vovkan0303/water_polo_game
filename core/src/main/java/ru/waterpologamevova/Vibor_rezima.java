@@ -105,6 +105,8 @@ public class Vibor_rezima implements Screen {
 
         }
 
+        camera.position.set(SCR_WIDTH/2, SCR_HEIGHT/2, 0);
+        camera.update();
 
         ScreenUtils.clear(0.15f, 0.15f, 0.7f, 1f);
         batch.setProjectionMatrix(camera.combined); // помогает подстроить под экран

@@ -16,6 +16,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
 
 public class Standart implements Screen {
     private Main main;
@@ -44,6 +50,21 @@ public class Standart implements Screen {
     long Timer_Start_perioda;
     long Timer_Start_matcha;
 
+    // inic botov
+    private Bot bot_soyus_1;
+    private Bot bot_soyus_2;
+    private Bot bot_soyus_3;
+    private Bot bot_soyus_4;
+    private Bot bot_soyus_5;
+    private Bot bot_soyus_vr;
+    private Bot bot_vrag_1;
+    private Bot bot_vrag_2;
+    private Bot bot_vrag_3;
+    private Bot bot_vrag_4;
+    private Bot bot_vrag_5;
+    private Bot bot_vrag_6;
+    private Bot  bot_vrag_vr;
+
 
 
 
@@ -56,7 +77,6 @@ public class Standart implements Screen {
         font = main.font4;
         Gdx.input.setInputProcessor(new SpaceXProcessor());
         imgJostik = new Texture("jostik.png");
-
 
 
         glav_menu_back = new Texture("pole.png");
@@ -96,6 +116,46 @@ public class Standart implements Screen {
             }
 
         }
+        /*
+        Random random = new Random();
+        int excludedNumber = n_playera_ch;
+        int randomNumber;
+
+        do {
+            randomNumber = random.nextInt(15) + 1; // 1-15
+        } while (randomNumber == excludedNumber);
+
+        System.out.println("Sluch ch  (bez " + excludedNumber + "): " + randomNumber);
+        */
+
+
+
+
+        Random random = new Random();
+        int excludedNumber = n_playera_ch; // Число, которое нужно исключить
+        Set<String> generatedNumbers = new HashSet<>(); // Храним уникальные числа
+
+        while (generatedNumbers.size() < 5) { // Пока не наберем 5 чисел
+            int randomNumber = random.nextInt(15) + 1; // 1-15
+
+            // Добавляем, если не исключенное и не повторяется
+            if (randomNumber != excludedNumber && randomNumber != 1) {
+                String random_n_str = "" + randomNumber;
+                generatedNumbers.add(random_n_str);
+            }
+        }
+
+        System.out.println("5 un ch (bez " + excludedNumber + " i 1): " + generatedNumbers);
+        List<String> Nomera_botov_spisok = new ArrayList<>(generatedNumbers);
+        String nomer_bot_souz_1 = Nomera_botov_spisok.get(0);
+        String nomer_bot_souz_2 = Nomera_botov_spisok.get(1);
+        String nomer_bot_souz_3 = Nomera_botov_spisok.get(2);
+        String nomer_bot_souz_4 = Nomera_botov_spisok.get(3);
+        String nomer_bot_souz_5 = Nomera_botov_spisok.get(4);
+        String nomer_bot_souz_vr = "1";
+
+
+
         if (player.y <= SCR_HEIGHT/2){
             camera.position.set(SCR_WIDTH/2, SCR_HEIGHT/2, 0);
         }

@@ -98,13 +98,16 @@ public class Menu implements Screen {
 
     @Override
     public void show() {
-
+        camera.position.set(SCR_WIDTH/2, SCR_HEIGHT/2, 0);
+        camera.update();
 
     }
 
     @Override
     public void render(float delta) {
         zv_vkl_kn = new Texture(ris);
+        camera.position.set(SCR_WIDTH/2, SCR_HEIGHT/2, 0);
+        camera.update();
         // касания
         if (Gdx.input.justTouched()){
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
