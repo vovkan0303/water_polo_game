@@ -32,6 +32,9 @@ public class Penalti implements Screen {
     private Vector3 touch;
     private Texture miach_iz;
     private BitmapFont font; // создание шрифта
+    private BitmapFont font2;
+
+
 
     private Texture glav_menu_back;
 
@@ -65,6 +68,7 @@ public class Penalti implements Screen {
         camera = main.camera;
         touch = main.touch;
         font = main.font2;
+        font2 = main.font3;
 
         glav_menu_back = new Texture("vorota.png");
         back_vibor = new Texture("back.png");
@@ -155,6 +159,7 @@ public class Penalti implements Screen {
 
         // надпись в меню
         font.draw(batch, "Выбери куда хочешь ударить!!!", 5, SCR_HEIGHT-5);
+        font2.draw(batch, "Забитых подрят:  " + popad_podryat, SCR_WIDTH/2, SCR_HEIGHT-5);
 
         //кнопки в меню
         batch.draw(back_vibor, back_menu_kn.x, back_menu_kn.y, back_menu_kn.width, back_menu_kn.height);
@@ -199,6 +204,7 @@ public class Penalti implements Screen {
     public void dispose() {batch.dispose();
         glav_menu_back.dispose();
         font.dispose();
+        font2.dispose();
         cel.dispose();
         back_vibor.dispose();
         miach_iz.dispose();
@@ -228,6 +234,7 @@ public class Penalti implements Screen {
         if (br == k) {
             popad_podryat += 1;
             main.setScreen(main.popal);
+            overwriteFile("podryat.txt", "" + popad_podryat);
             //System.out.println(popad_podryat + "   - Seria");
             //System.out.println(mishen + "   - Vibral");
         }

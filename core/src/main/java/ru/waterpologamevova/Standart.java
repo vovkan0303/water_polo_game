@@ -32,7 +32,13 @@ public class Standart implements Screen {
     private Vector3 touch;
 
 
+    private Logika_igri logika_igri;
+
+
     private BitmapFont font;
+    private BitmapFont font2;
+    private BitmapFont font_5s;
+
     private Texture imgJostik;
     private Texture glav_menu_back;
     private Texture  imgSprint;
@@ -51,6 +57,7 @@ public class Standart implements Screen {
     public static float WORLD_HEIHGT = SCR_HEIGHT*5;
     long Timer_Start_perioda;
     long Timer_Start_matcha;
+    long Timer_Start_igri;
 
     // inic botov
     private Bot bot_soyus_1;
@@ -83,10 +90,17 @@ public class Standart implements Screen {
     private Texture bot_vrag_5_iz;
     private Texture bot_vrag_6_iz;
     private Texture  bot_vrag_vr_iz;
+    private Texture dlya_otcheta;
+
 
     public int kto_player = 0;
 
-
+    public int poz_1_souz = 1;
+    public int poz_2_souz = 2;
+    public int poz_3_souz = 3;
+    public int poz_4_souz = 4;
+    public int poz_5_souz = 5;
+    public int poz_6_souz = 6;
 
 
     //конструктор
@@ -96,9 +110,13 @@ public class Standart implements Screen {
         camera = main.camera;
         touch = main.touch;
         font = main.font4;
+        font2 = main.font_taimer;
+        font_5s = main.font_taimer_5s;
         Gdx.input.setInputProcessor(new SpaceXProcessor());
         imgJostik = new Texture("jostik.png");
 
+
+        dlya_otcheta = new Texture("yacheika_dly_chisel.png");
 
         glav_menu_back = new Texture("pole.png");
         imgSprint = new Texture("sprint.png");
@@ -111,6 +129,9 @@ public class Standart implements Screen {
         udar_kn = new Udar_kn();
         sprint_kn = new Sprint_kn();
         krestik = new Button_menu(50, SCR_HEIGHT-(100), 70,70);
+
+
+        logika_igri = new Logika_igri();
 
 
         //boti koord
@@ -137,6 +158,10 @@ public class Standart implements Screen {
 
     @Override
     public void show() {
+        logika_igri.isp_start_perioda = 0;
+        logika_igri.isp_kto_zaber_myach = 0;
+
+
         kto_player = 0;
         String n_pos_playera = new String(readFile("poz_igr.txt"));
         int n_pos_playera_ch = Integer.parseInt(n_pos_playera);
@@ -149,22 +174,30 @@ public class Standart implements Screen {
             }
         }
         System.out.println(list_poz);
-
         if (n_pos_playera_ch != 0){
             if (n_pos_playera_ch == bot_soyus_1.pos) {
                 bot_soyus_1.pos = bot_soyus_6.pos;
+                poz_1_souz = 6;
             }
             else if (n_pos_playera_ch == bot_soyus_2.pos){
                 bot_soyus_2.pos = bot_soyus_6.pos;
+                poz_2_souz = 6;
             }
             else if (n_pos_playera_ch == bot_soyus_3.pos){
                 bot_soyus_3.pos = bot_soyus_6.pos;
+                poz_3_souz = 6;
             }
             else if (n_pos_playera_ch == bot_soyus_4.pos){
                 bot_soyus_4.pos = bot_soyus_6.pos;
+                poz_4_souz = 6;
             }
             else if (n_pos_playera_ch == bot_soyus_5.pos){
                 bot_soyus_5.pos = bot_soyus_6.pos;
+                poz_5_souz = 6;
+            }
+            else if (n_pos_playera_ch == bot_soyus_6.pos){
+                bot_soyus_6.pos = bot_soyus_6.pos;
+                poz_6_souz = 6;
             }
 
             //for (int i = 0; i < list_poz.size(); i++) {
@@ -193,7 +226,7 @@ public class Standart implements Screen {
         bot_soyus_5.x = 7*SCR_WIDTH/pn+70;
         bot_soyus_5.y = SCR_HEIGHT/2;
         bot_soyus_vr.x =  SCR_WIDTH/2;
-        bot_soyus_vr.y = SCR_HEIGHT/2;
+        bot_soyus_vr.y = SCR_HEIGHT/2-30;
         //vragi
         bot_vrag_1.x = 1*SCR_WIDTH/pn-60;
         bot_vrag_1.y = (WORLD_HEIHGT - SCR_HEIGHT/2) + 30;
@@ -207,7 +240,7 @@ public class Standart implements Screen {
         bot_vrag_5.y = (WORLD_HEIHGT - SCR_HEIGHT/2) + 30;
         bot_vrag_6.x = (8 * SCR_WIDTH/9f) + 50;
         bot_vrag_6.y = (WORLD_HEIHGT - SCR_HEIGHT/2) + 30;
-        bot_vrag_vr.x =  SCR_WIDTH/2;
+        bot_vrag_vr.x =  SCR_WIDTH/2+30;
         bot_vrag_vr.y = (WORLD_HEIHGT - SCR_HEIGHT/2) + 30;
 
 
@@ -346,10 +379,26 @@ public class Standart implements Screen {
         else {
             camera.position.set(SCR_WIDTH/2, player.y, 0);
         }
+        bot_soyus_1.isp = 0;
+        bot_soyus_2.isp = 0;
+        bot_soyus_3.isp = 0;
+        bot_soyus_4.isp = 0;
+        bot_soyus_5.isp = 0;
+        bot_soyus_6.isp = 0;
+        bot_soyus_vr.isp = 0;
+
+        bot_vrag_1.isp = 0;
+        bot_vrag_2.isp = 0;
+        bot_vrag_3.isp = 0;
+        bot_vrag_4.isp = 0;
+        bot_vrag_5.isp = 0;
+        bot_vrag_6.isp = 0;
+        bot_vrag_vr.isp = 0;
+
         camera.update();
         // время создания всего
-        Timer_Start_perioda = TimeUtils.millis();
-        Timer_Start_matcha = TimeUtils.millis();
+        Timer_Start_igri  = TimeUtils.millis();
+
     }
 
     @Override
@@ -362,6 +411,7 @@ public class Standart implements Screen {
                 main.setScreen(main.vibor_rezima);
             }
         }
+
 
         // Отрисовка
         batch.setProjectionMatrix(camera.combined); // помогает подстроить под экран
@@ -389,27 +439,124 @@ public class Standart implements Screen {
         batch.draw(imgJostik, jostik.scrX(), jostik.scrY(camera.position.y-SCR_HEIGHT/4), jostik.width, jostik.height);
         batch.draw(imgUdar, udar_kn.scrX(), udar_kn.scrY(camera.position.y-SCR_HEIGHT/4), udar_kn.width, udar_kn.height);
         batch.draw(imgSprint, sprint_kn.scrX(), sprint_kn.scrY(camera.position.y + 150), sprint_kn.width, sprint_kn.height);
-        if (kto_player == 1){
-            batch.draw(bot_soyus_6_iz, bot_soyus_6.scrX(), bot_soyus_6.scrY(), bot_soyus_6.width, bot_soyus_6.height);
-        }
-        else {
-            bot_soyus_vr.move();
-            bot_soyus_vr.dviz_vrat(1);
-            batch.draw(bot_soyus_vr_iz, bot_soyus_vr.scrX(), bot_soyus_vr.scrY(), bot_soyus_vr.width, bot_soyus_vr.height);
-        }
         batch.draw(player_img, player.scrX(), player.scrY(), player.width, player.height);
 
 
         batch.draw(krestik_iz, krestik.scrX(), krestik.scrY(camera.position.y+SCR_HEIGHT/2.4f), krestik.width, krestik.height);
         batch.draw(igrovoi_myach_iz, igrovoi_myach.x, igrovoi_myach.y, igrovoi_myach.width, igrovoi_myach.height);
-        // Отображение времени
-        font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start_matcha), 100, camera.position.y+SCR_HEIGHT/2-15);
 
 
 
+
+
+
+
+            // SOBITIAAAAAAAAAAAAA
+        if (logika_igri.chto_za_sab == 0){
+            player.nx = 0;
+            player.ny = 0;
+            bot_soyus_1.stop();
+            bot_soyus_2.stop();
+            bot_soyus_3.stop();
+            bot_soyus_4.stop();
+            bot_soyus_5.stop();
+            bot_soyus_6.stop();
+            bot_vrag_1.stop();
+            bot_vrag_2.stop();
+            bot_vrag_3.stop();
+            bot_vrag_4.stop();
+            bot_vrag_5.stop();
+            bot_vrag_6.stop();
+            batch.draw(dlya_otcheta, camera.position.x-SCR_WIDTH/4, camera.position.y-250, SCR_WIDTH/2, 500);
+            font_5s.draw(batch, Obratniy_otchet(TimeUtils.millis() - Timer_Start_igri), camera.position.x-25, camera.position.y);
+            font.draw(batch, "Приготовься к игре!", camera.position.x-240, camera.position.y + 150);
+            int vrem = (int) (TimeUtils.millis() - Timer_Start_igri);
+            if (vrem > 5500){
+                logika_igri.chto_za_sab = 1;
+                Timer_Start_perioda = TimeUtils.millis();
+                Timer_Start_matcha = TimeUtils.millis();
+            }
+        }
+        if (logika_igri.chto_za_sab == 1){
+            // start per
+
+            //souz
+            bot_soyus_1.start_per(1);
+            bot_soyus_2.start_per(1);
+            bot_soyus_3.start_per(1);
+            bot_soyus_4.start_per(1);
+            bot_soyus_5.start_per(1);
+            //vragi
+            bot_vrag_1.start_per(0);
+            bot_vrag_2.start_per(0);
+            bot_vrag_3.start_per(0);
+            bot_vrag_4.start_per(0);
+            bot_vrag_5.start_per(0);
+
+            if (kto_player == 1){
+                logika_igri.kto_zaber_myach();
+                //System.out.println(logika_igri.kto_zab_myach + "tut");
+                if (logika_igri.kto_zab_myach == 1){
+                    bot_soyus_6.start_per_za_myach(1);
+                    bot_vrag_6.start_per(0);
+                }
+                else {
+                    bot_vrag_6.start_per_za_myach(0);
+                    bot_soyus_6.start_per(1);
+                }
+            }
+            else {
+                bot_vrag_6.start_per_za_myach(0); // pliv_za myach
+            }
+        }
+        if (logika_igri.chto_za_sab != 0){
+            // ne dvig vrataari??????
+            // Отображение времени
+            bot_soyus_vr.isp = 0;
+            bot_vrag_vr.isp = 0;
+            font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start_matcha), 100, camera.position.y+SCR_HEIGHT/2-15);
+            font2.draw(batch, Vremya_ataki(TimeUtils.millis() - Timer_Start_perioda), 100, camera.position.y+SCR_HEIGHT/2-85);
+            if (kto_player == 1){
+                batch.draw(bot_soyus_6_iz, bot_soyus_6.scrX(), bot_soyus_6.scrY(), bot_soyus_6.width, bot_soyus_6.height);
+            }
+            else {
+                bot_soyus_vr.move();
+                bot_soyus_vr.dviz_vrat(1);
+                batch.draw(bot_soyus_vr_iz, bot_soyus_vr.scrX(), bot_soyus_vr.scrY(), bot_soyus_vr.width, bot_soyus_vr.height);
+            }
+            bot_vrag_vr.move();
+            bot_vrag_vr.dviz_vrat(0);
+        }
         // sobitia
-        bot_vrag_vr.move();
-        bot_vrag_vr.dviz_vrat(0);
+
+
+
+        // souz
+        /*
+        bot_soyus_1.peremesenie_na_poz(poz_1_souz, 1);
+        bot_soyus_2.peremesenie_na_poz(poz_2_souz, 1);
+        bot_soyus_3.peremesenie_na_poz(poz_3_souz,1);
+        bot_soyus_4.peremesenie_na_poz(poz_4_souz, 1);
+        bot_soyus_5.peremesenie_na_poz(poz_5_souz, 1);
+        String n_pos_playera = new String(readFile("poz_igr.txt"));
+        int n_pos_playera_ch = Integer.parseInt(n_pos_playera);
+        if (n_pos_playera_ch == 0) {
+            bot_soyus_6.peremesenie_na_poz(poz_6_souz, 1);
+        }
+
+
+
+
+
+        //vragi
+        bot_vrag_1.peremesenie_na_poz(1, 0);
+        bot_vrag_2.peremesenie_na_poz(2, 0);
+        bot_vrag_3.peremesenie_na_poz(3,0);
+        bot_vrag_4.peremesenie_na_poz(4, 0);
+        bot_vrag_5.peremesenie_na_poz(5, 0);
+        bot_vrag_6.peremesenie_na_poz(6, 0);
+
+         */
 
 
         igrovoi_myach.move(0);
@@ -474,6 +621,7 @@ public class Standart implements Screen {
         bot_vrag_5_iz.dispose();
         bot_vrag_6_iz.dispose();
         bot_vrag_vr_iz.dispose();
+        font2.dispose();
     }
     class SpaceXProcessor implements InputProcessor {
 
@@ -578,6 +726,10 @@ public class Standart implements Screen {
     private String Vremya_ataki(long Timer){
         long msec = 10 - (Timer % 1000) / 100;
         long sec = 29 - Timer/1000%60;
-        return sec / 10 + sec % 10 + ":" + msec;
+        return sec + ":" + msec;
+    }
+    private String Obratniy_otchet(long Timer){
+        long sec = 5 - Timer/1000%60;
+        return sec + "";
     }
 }

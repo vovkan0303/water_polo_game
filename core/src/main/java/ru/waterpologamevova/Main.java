@@ -25,6 +25,8 @@ public class Main extends Game {
     public BitmapFont font2;
     public BitmapFont font3;
     public BitmapFont font4;
+    public BitmapFont font_taimer;
+    public BitmapFont font_taimer_5s;
     public int ch;
     Menu menu;
     Vibor_rezima vibor_rezima;
@@ -51,6 +53,8 @@ public class Main extends Game {
         font2 = new BitmapFont(Gdx.files.internal("ch_zeltiu.fnt"));
         font3 = new BitmapFont(Gdx.files.internal("3fon_bel_ch.fnt"));
         font4 = new BitmapFont(Gdx.files.internal("nadpis_in_param.fnt"));
+        font_taimer = new BitmapFont(Gdx.files.internal("taimer.fnt"));
+        font_taimer_5s = new BitmapFont(Gdx.files.internal("taimer_5s.fnt"));
 
         menu = new Menu(this);
         vibor_rezima = new Vibor_rezima(this);
@@ -70,6 +74,9 @@ public class Main extends Game {
             createFile("nomer_igroka.txt", "2");
             createFile("kol_per.txt", "1");
             createFile("poz_igr.txt", "0");
+            createFile("podryat.txt", "0");
+            createFile("goal_souz.txt", "0");
+            createFile("goal_vrag.txt", "0");
             Gdx.app.postRunnable(() -> {
                 // Этот код выполнится в основном потоке после создания файлов
                 Gdx.app.log("FILES", "Faili ysp sozd");

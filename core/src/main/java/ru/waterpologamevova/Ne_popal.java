@@ -32,6 +32,7 @@ public class Ne_popal implements Screen {
     private Vector3 touch;
 
     private BitmapFont font; // создание шрифта
+    private BitmapFont font2;
     private Texture miach_iz;
     private Texture glav_menu_back;
 
@@ -81,6 +82,7 @@ public class Ne_popal implements Screen {
         camera = main.camera;
         touch = main.touch;
         font = main.font2;
+        font2 = main.font4;
 
 
         prav_ruk = new Texture("ruka_prav.png");
@@ -108,7 +110,7 @@ public class Ne_popal implements Screen {
         cel_kn11 = new Button_menu((SCR_WIDTH / 2) + 375 - 150, SCR_HEIGHT - 300, 150, 150);
         cel_kn12 = new Button_menu((SCR_WIDTH / 2) - 375, SCR_HEIGHT - 500, 150, 150);
         cel_kn13 = new Button_menu((SCR_WIDTH / 2) + 375 - 150, SCR_HEIGHT - 500, 150, 150);
-        ne_popal_kn = new Button_menu(SCR_WIDTH / 2 - 250, SCR_HEIGHT - 500, 500, 400);
+        ne_popal_kn = new Button_menu(SCR_WIDTH / 2 - 250, SCR_HEIGHT - 450, 500, 400);
         volni_kn = new Button_menu(0,0, SCR_WIDTH, 150);
 
         back_vibor = new Texture("back.png");
@@ -325,11 +327,12 @@ public class Ne_popal implements Screen {
         back_vibor.dispose();
         volni_iz.dispose();
         miach_iz.dispose();
+        font2.dispose();
     }
 
     private String Delay_vremya(long Timer) {
         long sec = Timer / 1000 % 60;
-        if (sec >= 9) {
+        if (sec >= 9.5f) {
             main.setScreen(main.penalti);
             Timer_Start_nepopal = TimeUtils.millis();
             overwriteFile("vibrannay_cel.txt", "0");
@@ -342,7 +345,9 @@ public class Ne_popal implements Screen {
         if (sec >= 4) {
             if (sec >= 7.3) {
                 batch.draw(ne_popal, ne_popal_kn.x, ne_popal_kn.y, ne_popal_kn.width, ne_popal_kn.height);
-
+                String podryat = new String(readFile("podryat.txt"));
+                int podryat_ch = Integer.parseInt(podryat);
+                font2.draw(batch, "Количество забитых мячей подряд:  " + podryat, 30, SCR_HEIGHT/10);
             }
             if (sec >= 5) {
                 stop_vr = true;
