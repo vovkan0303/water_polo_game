@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Igrovoi_myach {
     public float x, y;
     public float width, height;
-    public int u_kogo;       //sam = 0, u_igroka = 1, u_npc = 2; gol = 3; auto_gol = 4;
+    public int u_kogo;       //sam = 0, u_igroka = 1, u_npc_souz = 2; u_npc_vrag = 3; gol = 4; auto_gol = 5; souz_vrat_6; vrag_vrat_7
     public float vx, vy;
     public float vx_bud, vy_bud;
 
@@ -22,6 +22,16 @@ public class Igrovoi_myach {
     public void move(int gde) {
         dvizenie();
         u_kogo = gde;
+        if (y + height <= 150) {
+            vy = 0;
+            vx = 0;
+            u_kogo = 5;
+        }
+        else if ((y + height + 50 >= WORLD_HEIHGT)) {
+            vy = 0;
+            vx = 0;
+            u_kogo = 4;
+        }
         if (u_kogo == 0){
             if ((vx >= -0.07f) && (vx <= 0.07f)){
                 vx = 0;
@@ -45,11 +55,18 @@ public class Igrovoi_myach {
                 }
             }
 
-        if (u_kogo == 1){
+        else if (u_kogo == 1){
 
         }
-        if (u_kogo == 2){
+        else if (u_kogo == 2){
 
+        }
+        else if (u_kogo == 3){
+
+        }
+        else if (u_kogo == 4 || u_kogo == 5){
+            vx = 0;
+            vy = 0;
         }
         x += vx;
         y += vy;
@@ -72,27 +89,22 @@ public class Igrovoi_myach {
         if ((x <= 440 || x + width >= 770) &&((y <= 180) || (y + height >= WORLD_HEIHGT-180))){
             vy = -vy;
         }
-        else {
-            if (y + height <= 150) {
-                vy = 0;
-                vx = 0;
-                u_kogo = 4;
-            }
-            else if ((y + height + 50 >= WORLD_HEIHGT)) {
-                vy = 0;
-                vx = 0;
-                u_kogo = 3;
-            }
-        }
 
     }
 
     public void u_igroka(float x_pl, float y_pl, boolean derzit, float kuda_vx, float kuda_vy){
         if (derzit == false){
-            if (kuda_vx > 0) x = x + 100;
-            else x = x - 100;
-            if (kuda_vy > 0) y = y + 100;
-            else y = y - 100;
+            if (kuda_vx < 0 && kuda_vy > 0){
+                x -= 120;
+                y += 120;
+            }
+            else {
+                if (kuda_vx > 0) x = x + 50;
+                else x = x - 50;
+                if (kuda_vy > 0) y = y + 50;
+                else y = y - 50;
+            }
+
 
         }
         else {
@@ -112,8 +124,8 @@ public class Igrovoi_myach {
 
 
     public void restart(){
-        x = SCR_WIDTH/3;
-        y = SCR_HEIGHT/2;
+        x = 8 * SCR_WIDTH/9f;
+        y = WORLD_HEIHGT/2-40;
     }
 
     public float scrX(){

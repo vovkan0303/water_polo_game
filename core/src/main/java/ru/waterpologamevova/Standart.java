@@ -6,6 +6,8 @@ import static ru.waterpologamevova.Main.SCR_WIDTH;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,7 +32,8 @@ public class Standart implements Screen {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Vector3 touch;
-
+    private Music game_sound;
+    private Sound svistok;
 
     private Logika_igri logika_igri;
 
@@ -58,6 +61,7 @@ public class Standart implements Screen {
     long Timer_Start_perioda;
     long Timer_Start_matcha;
     long Timer_Start_igri;
+    long Timer_Start_posle_gola;
 
     // inic botov
     private Bot bot_soyus_1;
@@ -91,6 +95,11 @@ public class Standart implements Screen {
     private Texture bot_vrag_6_iz;
     private Texture  bot_vrag_vr_iz;
     private Texture dlya_otcheta;
+    private Texture dlya_otcheta_gol_in_vrag_vor;
+    private Texture dlya_otcheta_gol_in_souz_vor;
+    private Texture obvodka;
+    private Texture jos_udr_krug;
+    private Texture jos_dviz_krug;
 
 
     public int kto_player = 0;
@@ -101,6 +110,9 @@ public class Standart implements Screen {
     public int poz_4_souz = 4;
     public int poz_5_souz = 5;
     public int poz_6_souz = 6;
+
+    private int nazat_jostik_dviz = 0;
+    private int nazat_jostik_udara = 0;
 
 
     //конструктор
@@ -117,6 +129,11 @@ public class Standart implements Screen {
 
 
         dlya_otcheta = new Texture("yacheika_dly_chisel.png");
+        dlya_otcheta_gol_in_vrag_vor = new Texture("Gol.png");
+        dlya_otcheta_gol_in_souz_vor = new Texture("vib_team.png");
+        obvodka = new Texture("tek_poz.png");
+        jos_udr_krug= new Texture("tek_poz.png");
+        jos_dviz_krug= new Texture("jos_n.png");
 
         glav_menu_back = new Texture("pole.png");
         imgSprint = new Texture("sprint.png");
@@ -125,7 +142,7 @@ public class Standart implements Screen {
         krestik_iz = new Texture("krestik.png");
         jostik = new Jostik();
         player = new Player(8 * SCR_WIDTH/9f, SCR_HEIGHT/2);
-        igrovoi_myach = new Igrovoi_myach(SCR_WIDTH/2+200, SCR_HEIGHT/2);
+        igrovoi_myach = new Igrovoi_myach(8 * SCR_WIDTH/9f, WORLD_HEIHGT/2 - 40);
         udar_kn = new Udar_kn();
         sprint_kn = new Sprint_kn();
         krestik = new Button_menu(50, SCR_HEIGHT-(100), 70,70);
@@ -154,13 +171,26 @@ public class Standart implements Screen {
         bot_vrag_vr = new Bot(SCR_WIDTH/2, (WORLD_HEIHGT - SCR_HEIGHT/2) + 30,0);
 
 
+
+
     }
 
     @Override
     public void show() {
+
+        //создание звуков
+
+        game_sound = Gdx.audio.newMusic(Gdx.files.internal("game_sound.mp3"));
+        // музыка играет зациклино
+        game_sound.play();
+        game_sound.setLooping(true);
+        game_sound.setVolume(0.4f);
+
+
         logika_igri.isp_start_perioda = 0;
         logika_igri.isp_kto_zaber_myach = 0;
-
+        logika_igri.isp_bil_zabit_souz_vor = 0;
+        logika_igri.isp_bil_zabit_vrag_vor = 0;
 
         kto_player = 0;
         String n_pos_playera = new String(readFile("poz_igr.txt"));
@@ -398,11 +428,13 @@ public class Standart implements Screen {
         camera.update();
         // время создания всего
         Timer_Start_igri  = TimeUtils.millis();
+        logika_igri.chto_za_sab = 0;
 
     }
 
     @Override
     public void render(float delta) {
+        Go_mus_game();
         ScreenUtils.clear(0.15f, 0.15f, 0.7f, 1f);
         if (Gdx.input.justTouched()){
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -435,20 +467,37 @@ public class Standart implements Screen {
         batch.draw(bot_vrag_6_iz, bot_vrag_6.scrX(), bot_vrag_6.scrY(), bot_vrag_6.width, bot_vrag_6.height);
         batch.draw(bot_vrag_vr_iz, bot_vrag_vr.scrX(), bot_vrag_vr.scrY(), bot_vrag_vr.width, bot_vrag_vr.height);
 
+        batch.draw(obvodka, player.scrX()-10, player.scrY()-10, player.width+20, player.height+20);
+        batch.draw(player_img, player.scrX(), player.scrY(), player.width, player.height);
+
 
         batch.draw(imgJostik, jostik.scrX(), jostik.scrY(camera.position.y-SCR_HEIGHT/4), jostik.width, jostik.height);
         batch.draw(imgUdar, udar_kn.scrX(), udar_kn.scrY(camera.position.y-SCR_HEIGHT/4), udar_kn.width, udar_kn.height);
         batch.draw(imgSprint, sprint_kn.scrX(), sprint_kn.scrY(camera.position.y + 150), sprint_kn.width, sprint_kn.height);
-        batch.draw(player_img, player.scrX(), player.scrY(), player.width, player.height);
+        if (nazat_jostik_dviz == 1) batch.draw(jos_dviz_krug, touch.x-25, touch.y-25, 50, 50);
+        if (nazat_jostik_udara == 1) batch.draw(jos_udr_krug, touch.x-25, touch.y-25, 50, 50);
+
+
+
 
 
         batch.draw(krestik_iz, krestik.scrX(), krestik.scrY(camera.position.y+SCR_HEIGHT/2.4f), krestik.width, krestik.height);
         batch.draw(igrovoi_myach_iz, igrovoi_myach.x, igrovoi_myach.y, igrovoi_myach.width, igrovoi_myach.height);
 
 
-
-
-
+        if ((igrovoi_myach.u_kogo == 4 ) && logika_igri.chto_za_sab != 4 && logika_igri.chto_za_sab != 5 && logika_igri.isp_bil_zabit_vrag_vor == 0) {
+            logika_igri.chto_za_sab = igrovoi_myach.u_kogo;
+            igrovoi_myach.move(logika_igri.chto_za_sab);
+            Timer_Start_posle_gola = TimeUtils.millis();
+        }
+        else if ((igrovoi_myach.u_kogo == 5 ) && logika_igri.chto_za_sab != 4 && logika_igri.chto_za_sab != 5 && logika_igri.isp_bil_zabit_souz_vor == 0) {
+            logika_igri.chto_za_sab = igrovoi_myach.u_kogo;
+            igrovoi_myach.move(logika_igri.chto_za_sab);
+            Timer_Start_posle_gola = TimeUtils.millis();
+        }
+        else  {
+            igrovoi_myach.move(0);
+        }
 
 
             // SOBITIAAAAAAAAAAAAA
@@ -469,17 +518,19 @@ public class Standart implements Screen {
             bot_vrag_6.stop();
             batch.draw(dlya_otcheta, camera.position.x-SCR_WIDTH/4, camera.position.y-250, SCR_WIDTH/2, 500);
             font_5s.draw(batch, Obratniy_otchet(TimeUtils.millis() - Timer_Start_igri), camera.position.x-25, camera.position.y);
-            font.draw(batch, "Приготовься к игре!", camera.position.x-240, camera.position.y + 150);
+            font.draw(batch, "Приготовься к игре!", camera.position.x-260, camera.position.y + 150);
             int vrem = (int) (TimeUtils.millis() - Timer_Start_igri);
             if (vrem > 5500){
                 logika_igri.chto_za_sab = 1;
                 Timer_Start_perioda = TimeUtils.millis();
                 Timer_Start_matcha = TimeUtils.millis();
+                svistok = Gdx.audio.newSound(Gdx.files.internal("svistok_gromche.mp3"));
+                svistok.setVolume(svistok.play(), 0.8f);
+
             }
         }
         if (logika_igri.chto_za_sab == 1){
             // start per
-
             //souz
             bot_soyus_1.start_per(1);
             bot_soyus_2.start_per(1);
@@ -492,7 +543,6 @@ public class Standart implements Screen {
             bot_vrag_3.start_per(0);
             bot_vrag_4.start_per(0);
             bot_vrag_5.start_per(0);
-
             if (kto_player == 1){
                 logika_igri.kto_zaber_myach();
                 //System.out.println(logika_igri.kto_zab_myach + "tut");
@@ -510,7 +560,6 @@ public class Standart implements Screen {
             }
         }
         if (logika_igri.chto_za_sab != 0){
-            // ne dvig vrataari??????
             // Отображение времени
             bot_soyus_vr.isp = 0;
             bot_vrag_vr.isp = 0;
@@ -526,6 +575,219 @@ public class Standart implements Screen {
             }
             bot_vrag_vr.move();
             bot_vrag_vr.dviz_vrat(0);
+        }
+
+        if (logika_igri.chto_za_sab == 4){
+            if (logika_igri.isp_bil_zabit_vrag_vor == 0){
+                player.nx = 0;
+                player.ny = 0;
+                int vrem2 = (int) (TimeUtils.millis() - Timer_Start_posle_gola);
+                if (vrem2 > 4000){
+
+                    bot_soyus_1.isp = 0;
+                    bot_soyus_2.isp = 0;
+                    bot_soyus_3.isp = 0;
+                    bot_soyus_4.isp = 0;
+                    bot_soyus_5.isp = 0;
+                    bot_soyus_6.isp = 0;
+                    bot_soyus_vr.isp = 0;
+
+                    bot_vrag_1.isp = 0;
+                    bot_vrag_2.isp = 0;
+                    bot_vrag_3.isp = 0;
+                    bot_vrag_4.isp = 0;
+                    bot_vrag_5.isp = 0;
+                    bot_vrag_6.isp = 0;
+                    bot_vrag_vr.isp = 0;
+
+
+                    logika_igri.chto_za_sab = 9;
+                    logika_igri.isp_bil_zabit_vrag_vor = 1;
+                }
+                else {
+                    batch.draw(dlya_otcheta_gol_in_vrag_vor, camera.position.x-SCR_WIDTH/4, camera.position.y-250, SCR_WIDTH/2, 500);
+                    font.draw(batch, "ГОООООООООООООООЛ!", camera.position.x-260, camera.position.y+100);
+                    batch.draw(igrovoi_myach_iz, camera.position.x-260, camera.position.y-200, 200, 200);
+                    svistok = Gdx.audio.newSound(Gdx.files.internal("svistok_gromche.mp3"));
+                }
+                if (vrem2 <= 30){
+                    svistok.setVolume(svistok.play(), 0.8f);
+                }
+            }
+
+        }
+        else if (logika_igri.chto_za_sab == 5){
+            if (logika_igri.isp_bil_zabit_souz_vor == 0){
+                player.nx = 0;
+                player.ny = 0;
+                int vrem2 = (int) (TimeUtils.millis() - Timer_Start_posle_gola);
+                if (vrem2 > 4000){
+                    bot_soyus_1.isp = 0;
+                    bot_soyus_2.isp = 0;
+                    bot_soyus_3.isp = 0;
+                    bot_soyus_4.isp = 0;
+                    bot_soyus_5.isp = 0;
+                    bot_soyus_6.isp = 0;
+                    bot_soyus_vr.isp = 0;
+
+                    bot_vrag_1.isp = 0;
+                    bot_vrag_2.isp = 0;
+                    bot_vrag_3.isp = 0;
+                    bot_vrag_4.isp = 0;
+                    bot_vrag_5.isp = 0;
+                    bot_vrag_6.isp = 0;
+                    bot_vrag_vr.isp = 0;
+
+
+                    logika_igri.chto_za_sab = 10;
+                    logika_igri.isp_bil_zabit_souz_vor = 1;
+                }
+                else {
+                    batch.draw(dlya_otcheta_gol_in_souz_vor, camera.position.x-SCR_WIDTH/4, camera.position.y-250, SCR_WIDTH/2, 500);
+                    font.draw(batch, "Вам забили!", camera.position.x-130, camera.position.y+100);
+                    batch.draw(igrovoi_myach_iz, camera.position.x-260, camera.position.y-200, 200, 200);
+                    svistok = Gdx.audio.newSound(Gdx.files.internal("svistok_gromche.mp3"));
+                }
+                if (vrem2 <= 30){
+                    svistok.setVolume(svistok.play(), 0.8f);
+                }
+            }
+        }
+        if (logika_igri.chto_za_sab == 9){
+            igrovoi_myach.x = SCR_WIDTH/2 - igrovoi_myach.width/2;
+            igrovoi_myach.y = WORLD_HEIHGT/2 - igrovoi_myach.height/2;
+
+
+            // rasstanovka igrokov
+
+            player.x = SCR_WIDTH/2;
+            player.y = WORLD_HEIHGT/2 - player.height - 200;
+
+            float pn = 9f;
+            bot_soyus_1.x = 1*SCR_WIDTH/pn-70;
+            bot_soyus_1.y = WORLD_HEIHGT/2 - 200;
+            bot_soyus_2.x = 2*SCR_WIDTH/pn-70;
+            bot_soyus_2.y = WORLD_HEIHGT/2 - 200;
+            bot_soyus_3.x = 3*SCR_WIDTH/pn-70;
+            bot_soyus_3.y = WORLD_HEIHGT/2 - 200;
+            bot_soyus_4.x = 6*SCR_WIDTH/pn+70;
+            bot_soyus_4.y = WORLD_HEIHGT/2 - 200;
+            bot_soyus_5.x = 7*SCR_WIDTH/pn+70;
+            bot_soyus_5.y = WORLD_HEIHGT/2 - 200;
+            if (kto_player == 1){
+                bot_soyus_6.x = 8 * SCR_WIDTH/9f + 70;
+                bot_soyus_6.y = WORLD_HEIHGT/2 - 200;
+            }
+            //vragi
+            bot_vrag_1.x = 1*SCR_WIDTH/pn-60;
+            bot_vrag_1.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_2.x = 2*SCR_WIDTH/pn-60;
+            bot_vrag_2.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_3.x = 3*SCR_WIDTH/pn-60;
+            bot_vrag_3.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_4.x = 6*SCR_WIDTH/pn+60;
+            bot_vrag_4.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_5.x = 7*SCR_WIDTH/pn+60;
+            bot_vrag_5.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_6.x = (8 * SCR_WIDTH/9f) + 50;
+            bot_vrag_6.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+
+
+
+            logika_igri.chto_za_sab = 3;
+
+        }
+        if (logika_igri.chto_za_sab == 10){
+            igrovoi_myach.x = SCR_WIDTH/2 - igrovoi_myach.width/2;
+            igrovoi_myach.y = WORLD_HEIHGT/2 - igrovoi_myach.height/2;
+
+
+
+            // rasstanovka igrokov
+
+            player.x = SCR_WIDTH/2;
+            player.y = WORLD_HEIHGT/2 - player.height - 200;
+
+            float pn = 9f;
+            bot_soyus_1.x = 1*SCR_WIDTH/pn-70;
+            bot_soyus_1.y = WORLD_HEIHGT/2 - 200;
+            bot_soyus_2.x = 2*SCR_WIDTH/pn-70;
+            bot_soyus_2.y = WORLD_HEIHGT/2 - 200;
+            bot_soyus_3.x = 3*SCR_WIDTH/pn-70;
+            bot_soyus_3.y = WORLD_HEIHGT/2 - 200;
+            bot_soyus_4.x = 6*SCR_WIDTH/pn+70;
+            bot_soyus_4.y = WORLD_HEIHGT/2 - 200;
+            bot_soyus_5.x = 7*SCR_WIDTH/pn+70;
+            bot_soyus_5.y = WORLD_HEIHGT/2 - 200;
+            if (kto_player == 1){
+                bot_soyus_6.x = 8 * SCR_WIDTH/9f + 70;
+                bot_soyus_6.y = WORLD_HEIHGT/2 - 200;
+            }
+            //vragi
+            bot_vrag_1.x = 1*SCR_WIDTH/pn-60;
+            bot_vrag_1.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_2.x = 2*SCR_WIDTH/pn-60;
+            bot_vrag_2.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_3.x = 3*SCR_WIDTH/pn-60;
+            bot_vrag_3.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_4.x = 6*SCR_WIDTH/pn+60;
+            bot_vrag_4.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_5.x = 7*SCR_WIDTH/pn+60;
+            bot_vrag_5.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+            bot_vrag_6.x = (8 * SCR_WIDTH/9f) + 50;
+            bot_vrag_6.y = WORLD_HEIHGT/2 + (200 - bot_soyus_1.height);
+
+
+            logika_igri.chto_za_sab = 2;
+        }
+        if (logika_igri.chto_za_sab == 2){
+            bot_vrag_1.peremesenie_na_poz(1, 0, 1);
+            bot_vrag_2.peremesenie_na_poz(2, 0, 1);
+            bot_vrag_3.peremesenie_na_poz(3,0, 1);
+            bot_vrag_4.peremesenie_na_poz(4, 0, 1);
+            bot_vrag_5.peremesenie_na_poz(5, 0, 1);
+            bot_vrag_6.peremesenie_na_poz(6, 0, 1);
+
+
+            bot_soyus_1.peremesenie_na_poz(bot_soyus_1.pos, 1, 0);
+            bot_soyus_2.peremesenie_na_poz(bot_soyus_2.pos, 1, 0);
+            bot_soyus_3.peremesenie_na_poz(bot_soyus_3.pos, 1, 0);
+            bot_soyus_4.peremesenie_na_poz(bot_soyus_4.pos, 1, 0);
+            bot_soyus_5.peremesenie_na_poz(bot_soyus_5.pos, 1, 0);
+            if (kto_player == 1){bot_soyus_6.peremesenie_na_poz(bot_soyus_6.pos, 1, 0);}
+        }
+        if (logika_igri.chto_za_sab == 3){
+
+            bot_vrag_1.peremesenie_na_poz(1, 0, 0);
+            bot_vrag_2.peremesenie_na_poz(2, 0, 0);
+            bot_vrag_3.peremesenie_na_poz(3,0, 0);
+            bot_vrag_4.peremesenie_na_poz(4, 0, 0);
+            bot_vrag_5.peremesenie_na_poz(5, 0, 0);
+            bot_vrag_6.peremesenie_na_poz(6, 0, 0);
+
+
+            bot_soyus_1.peremesenie_na_poz(bot_soyus_1.pos, 1, 1);
+            bot_soyus_2.peremesenie_na_poz(bot_soyus_2.pos, 1, 1);
+            bot_soyus_3.peremesenie_na_poz(bot_soyus_3.pos, 1, 1);
+            bot_soyus_4.peremesenie_na_poz(bot_soyus_4.pos, 1, 1);
+            bot_soyus_5.peremesenie_na_poz(bot_soyus_5.pos, 1, 1);
+            if (kto_player == 1){bot_soyus_6.peremesenie_na_poz(bot_soyus_6.pos, 1, 1);}
+
+
+
+        }
+
+
+
+        if ((igrovoi_myach.y >= bot_soyus_vr.scrY() - bot_soyus_vr.height/2 - 5  && igrovoi_myach.y <= bot_soyus_vr.scrY() + bot_soyus_vr.height/2 + 5) && (bot_soyus_vr.scrX() - bot_soyus_vr.width/2 - 5 <= igrovoi_myach.scrX() - igrovoi_myach.width/2  && igrovoi_myach.scrX() + igrovoi_myach.width/2 <= bot_soyus_vr.scrX() + bot_soyus_vr.width/2 + 5)){
+            igrovoi_myach.vx = -igrovoi_myach.vx;
+            igrovoi_myach.vy = -igrovoi_myach.vy;
+
+        }
+        if ((igrovoi_myach.y >= bot_vrag_vr.scrY() - bot_vrag_vr.height/2 - 5  && igrovoi_myach.y <= bot_vrag_vr.scrY() + bot_vrag_vr.height/2 + 5) && (bot_vrag_vr.scrX() - bot_vrag_vr.width/2 - 5 <= igrovoi_myach.scrX() - igrovoi_myach.width/2  && igrovoi_myach.scrX() + igrovoi_myach.width/2 <= bot_vrag_vr.scrX() + bot_vrag_vr.width/2 + 5)){
+            igrovoi_myach.vx = -igrovoi_myach.vx;
+            igrovoi_myach.vy = -igrovoi_myach.vy;
+
         }
         // sobitia
 
@@ -559,9 +821,29 @@ public class Standart implements Screen {
          */
 
 
-        igrovoi_myach.move(0);
         if ((((player.scrX() + r_kas_myach) >= igrovoi_myach.scrX()) && ((player.scrX() - r_kas_myach) <= igrovoi_myach.scrX())) && (((player.scrY() + r_kas_myach) >= igrovoi_myach.scrY()) && ((player.scrY() - r_kas_myach) <= igrovoi_myach.scrY()))) {
             igrovoi_myach.u_igroka(player.scrX(), player.scrY(), true, igrovoi_myach.vx, igrovoi_myach.vy);
+
+            bot_soyus_1.isp = 0;
+            bot_soyus_2.isp = 0;
+            bot_soyus_3.isp = 0;
+            bot_soyus_4.isp = 0;
+            bot_soyus_5.isp = 0;
+            bot_soyus_6.isp = 0;
+            bot_soyus_vr.isp = 0;
+
+            bot_vrag_1.isp = 0;
+            bot_vrag_2.isp = 0;
+            bot_vrag_3.isp = 0;
+            bot_vrag_4.isp = 0;
+            bot_vrag_5.isp = 0;
+            bot_vrag_6.isp = 0;
+            bot_vrag_vr.isp = 0;
+
+            logika_igri.chto_za_sab = 2;
+
+            //logika_igri.isp_bil_zabit_souz_vor = 0;
+            //logika_igri.isp_bil_zabit_vrag_vor = 0;
         }
 
 
@@ -577,6 +859,8 @@ public class Standart implements Screen {
         player.move();
         batch.end();
 
+
+        System.out.println(logika_igri.chto_za_sab);
     }
 
     @Override
@@ -586,21 +870,22 @@ public class Standart implements Screen {
 
     @Override
     public void pause() {
-
+        game_sound.stop();
     }
 
     @Override
     public void resume() {
-
+        game_sound.stop();
     }
 
     @Override
     public void hide() {
-
+        game_sound.stop();
     }
 
     @Override
     public void dispose() {
+        svistok.dispose();
         batch.dispose();
         glav_menu_back.dispose();
         font.dispose();
@@ -622,6 +907,13 @@ public class Standart implements Screen {
         bot_vrag_6_iz.dispose();
         bot_vrag_vr_iz.dispose();
         font2.dispose();
+        game_sound.dispose();
+        obvodka.dispose();
+        dlya_otcheta.dispose();
+        dlya_otcheta_gol_in_souz_vor.dispose();
+        dlya_otcheta_gol_in_vrag_vor.dispose();
+        jos_udr_krug.dispose();
+        jos_dviz_krug.dispose();
     }
     class SpaceXProcessor implements InputProcessor {
 
@@ -645,9 +937,11 @@ public class Standart implements Screen {
             touch.set(screenX, screenY, 0);
             camera.unproject(touch);
             if(jostik.isTouchInside(touch)) {
-                player.touchJoystick(touch, jostik);}
+                player.touchJoystick(touch, jostik);
+            }
             if(udar_kn.isTouchInside(touch)) {
-                igrovoi_myach.touchJoystick_udar(touch, udar_kn);}
+                igrovoi_myach.touchJoystick_udar(touch, udar_kn);
+            }
             if (sprint_kn.isTouchInside(touch)){
                 player.sprint(); // ne rab
             }
@@ -662,6 +956,8 @@ public class Standart implements Screen {
             if (udar_kn.isTouchInside(touch)){
                 if ((((player.scrX() + r_kas_myach) >= igrovoi_myach.scrX()) && ((player.scrX() - r_kas_myach) <= igrovoi_myach.scrX())) && (((player.scrY() + r_kas_myach) >= igrovoi_myach.scrY()) && ((player.scrY() - r_kas_myach) <= igrovoi_myach.scrY()))){
                     //igrovoi_myach.udar_v_napr(player.scrX(), player.scrY(), false, touch, jostik);
+                    logika_igri.isp_bil_zabit_souz_vor = 0;
+                    logika_igri.isp_bil_zabit_vrag_vor = 0;
                     igrovoi_myach.otpustil(igrovoi_myach.vx_bud, igrovoi_myach.vy_bud);
                 }
             }
@@ -680,11 +976,15 @@ public class Standart implements Screen {
             camera.unproject(touch);
             if(jostik.isTouchInside(touch)) {
                 player.touchJoystick(touch, jostik);
+                nazat_jostik_dviz = 1;
             }
+            else {nazat_jostik_dviz = 0;}
             if(udar_kn.isTouchInside(touch)) {
                 igrovoi_myach.touchJoystick_udar(touch, udar_kn);
-                //player.touchJoystick(touch, jostik);
+                nazat_jostik_udara = 1;
             }
+            else {nazat_jostik_udara = 0;}
+                //player.touchJoystick(touch, jostik);
             if (sprint_kn.isTouchInside(touch)){
                 player.sprint();
             }
@@ -731,5 +1031,12 @@ public class Standart implements Screen {
     private String Obratniy_otchet(long Timer){
         long sec = 5 - Timer/1000%60;
         return sec + "";
+    }
+    private String Obratniy_otchet2(long Timer){
+        long sec = 5 - Timer/1000%60;
+        return sec + "";
+    }
+    private void Go_mus_game(){
+        game_sound.play();
     }
 }
