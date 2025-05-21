@@ -563,7 +563,13 @@ public class Standart implements Screen {
             // Отображение времени
             bot_soyus_vr.isp = 0;
             bot_vrag_vr.isp = 0;
-            font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start_matcha), 100, camera.position.y+SCR_HEIGHT/2-15);
+
+
+            String goal_souz = new String(readFile("goal_souz.txt"));
+            String goal_vrag = new String(readFile("goal_vrag.txt"));
+
+
+            font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start_matcha) + " Счёт: " + goal_souz + " : "+ goal_vrag, 100, camera.position.y+SCR_HEIGHT/2-15);
             font2.draw(batch, Vremya_ataki(TimeUtils.millis() - Timer_Start_perioda), 100, camera.position.y+SCR_HEIGHT/2-85);
             if (kto_player == 1){
                 batch.draw(bot_soyus_6_iz, bot_soyus_6.scrX(), bot_soyus_6.scrY(), bot_soyus_6.width, bot_soyus_6.height);
@@ -600,6 +606,9 @@ public class Standart implements Screen {
                     bot_vrag_6.isp = 0;
                     bot_vrag_vr.isp = 0;
 
+                    String goal_souz = new String(readFile("goal_souz.txt"));
+                    int goal_souz_ch = Integer.parseInt(goal_souz);
+                    overwriteFile("goal_souz.txt", "" + (goal_souz_ch + 1));
 
                     logika_igri.chto_za_sab = 9;
                     logika_igri.isp_bil_zabit_vrag_vor = 1;
@@ -622,6 +631,7 @@ public class Standart implements Screen {
                 player.ny = 0;
                 int vrem2 = (int) (TimeUtils.millis() - Timer_Start_posle_gola);
                 if (vrem2 > 4000){
+
                     bot_soyus_1.isp = 0;
                     bot_soyus_2.isp = 0;
                     bot_soyus_3.isp = 0;
@@ -638,6 +648,9 @@ public class Standart implements Screen {
                     bot_vrag_6.isp = 0;
                     bot_vrag_vr.isp = 0;
 
+                    String goal_vrag = new String(readFile("goal_vrag.txt"));
+                    int goal_vrag_ch = Integer.parseInt(goal_vrag);
+                    overwriteFile("goal_vrag.txt", "" + (goal_vrag_ch + 1));
 
                     logika_igri.chto_za_sab = 10;
                     logika_igri.isp_bil_zabit_souz_vor = 1;
@@ -860,7 +873,7 @@ public class Standart implements Screen {
         batch.end();
 
 
-        System.out.println(logika_igri.chto_za_sab);
+        //System.out.println(logika_igri.chto_za_sab);
     }
 
     @Override
@@ -1015,12 +1028,22 @@ public class Standart implements Screen {
             return null;
         }
     }
+    public static boolean overwriteFile(String fileName, String newContent) {
+        try {
+            FileHandle file = Gdx.files.local(fileName);
+            file.writeString(newContent, false); // false - перезаписать
+            return true;
+        } catch (Exception e) {
+            Gdx.app.error("FileUtils", "Ошибка перезаписи файла", e);
+            return false;
+        }
+    }
     private String Taim_played_vremya(long Timer){
         long msec = 10 - (Timer % 1000) / 100;
         long sec = 59 - Timer/1000%60;
         long min = 7 - Timer/1000/60%60;
         long hour = Timer/1000/60/60%24;
-        return min / 10 + min % 10 + ":" +sec / 10 + sec % 10 + ":" + msec;
+        return min / 10 + min % 10 + ":" +sec / 10 + sec % 10; // + ":" + msec
     }
 
     private String Vremya_ataki(long Timer){

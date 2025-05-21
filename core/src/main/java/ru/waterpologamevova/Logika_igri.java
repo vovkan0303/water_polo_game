@@ -16,6 +16,8 @@ public class Logika_igri {
     8 - закончилась атака у врага
     9 - после гола в враг ворота //da
     10 - после гола в союз ворота //da
+    11 - конец игры
+    12 - перерыв
      */
     public int isp_start_perioda = 0;
     public int isp_kto_zaber_myach = 0;
