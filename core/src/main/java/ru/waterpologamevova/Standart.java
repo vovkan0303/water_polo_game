@@ -793,7 +793,8 @@ public class Standart implements Screen {
             bot_vrag_4.peremesenie_na_poz(4, 0, 0);
             bot_vrag_5.peremesenie_na_poz(5, 0, 0);
             bot_vrag_6.peremesenie_na_poz(6, 0, 0);
-
+            igrovoi_myach.x = bot_vrag_3.x + 25;
+            igrovoi_myach.y = bot_vrag_3.y;
 
             bot_soyus_1.peremesenie_na_poz(bot_soyus_1.pos, 1, 1);
             bot_soyus_2.peremesenie_na_poz(bot_soyus_2.pos, 1, 1);
