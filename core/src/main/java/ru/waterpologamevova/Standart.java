@@ -115,6 +115,8 @@ public class Standart implements Screen {
     private int nazat_jostik_udara = 0;
 
 
+    private  int period;
+
     //конструктор
     public Standart(Main main) {
         this.main = main;
@@ -177,7 +179,11 @@ public class Standart implements Screen {
 
     @Override
     public void show() {
-
+        String periodov = new String(readFile("kol_per.txt"));
+        int periodov_ch = Integer.parseInt(periodov);
+        period = periodov_ch-1;
+        overwriteFile("kol_per.txt", "" + period);
+        logika_igri.chto_za_sab = 0;
         //создание звуков
 
         game_sound = Gdx.audio.newMusic(Gdx.files.internal("game_sound.mp3"));
@@ -434,6 +440,9 @@ public class Standart implements Screen {
 
     @Override
     public void render(float delta) {
+        if (period < 0){
+            main.setScreen(main.end);
+        }
         Go_mus_game();
         ScreenUtils.clear(0.15f, 0.15f, 0.7f, 1f);
         if (Gdx.input.justTouched()){
@@ -571,6 +580,11 @@ public class Standart implements Screen {
 
             font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start_matcha) + " Счёт: " + goal_souz + " : "+ goal_vrag, 100, camera.position.y+SCR_HEIGHT/2-15);
             font2.draw(batch, Vremya_ataki(TimeUtils.millis() - Timer_Start_perioda), 100, camera.position.y+SCR_HEIGHT/2-85);
+            if(TimeUtils.millis() - Timer_Start_matcha > 1000*60*8){     // --------------
+                main.setScreen(main.pereriv);
+                game_sound.stop();
+            }
+
             if (kto_player == 1){
                 batch.draw(bot_soyus_6_iz, bot_soyus_6.scrX(), bot_soyus_6.scrY(), bot_soyus_6.width, bot_soyus_6.height);
             }
@@ -708,6 +722,7 @@ public class Standart implements Screen {
 
 
             logika_igri.chto_za_sab = 3;
+            Timer_Start_perioda = TimeUtils.millis();
 
         }
         if (logika_igri.chto_za_sab == 10){
@@ -752,6 +767,7 @@ public class Standart implements Screen {
 
 
             logika_igri.chto_za_sab = 2;
+            Timer_Start_perioda = TimeUtils.millis();
         }
         if (logika_igri.chto_za_sab == 2){
             bot_vrag_1.peremesenie_na_poz(1, 0, 1);
@@ -868,6 +884,17 @@ public class Standart implements Screen {
         }
         else {camera.position.y += (player.y - camera.position.y) * 1f;}
 
+
+        if (TimeUtils.millis() - Timer_Start_perioda >= 30000){
+            Timer_Start_perioda = TimeUtils.millis();
+            if (logika_igri.chto_za_sab == 2){
+                logika_igri.chto_za_sab = 3;
+            }
+            else if (logika_igri.chto_za_sab == 3){
+                logika_igri.chto_za_sab = 2;
+            }
+        }
+
         camera.update();
         player.move();
         batch.end();
@@ -927,6 +954,7 @@ public class Standart implements Screen {
         dlya_otcheta_gol_in_vrag_vor.dispose();
         jos_udr_krug.dispose();
         jos_dviz_krug.dispose();
+
     }
     class SpaceXProcessor implements InputProcessor {
 

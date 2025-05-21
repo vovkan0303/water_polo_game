@@ -122,7 +122,7 @@ public class Vibor_rezima implements Screen {
         font.draw(batch, "Выберите режим игры", SCR_WIDTH/3, SCR_HEIGHT-50);
 
         // Отображение времени
-        font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start), SCR_WIDTH-200, SCR_HEIGHT-30);
+        //font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start), SCR_WIDTH-200, SCR_HEIGHT-30);
 
         //кнопки в меню
         batch.draw(klassika, klassika_kn.x, klassika_kn.y, klassika_kn.width, klassika_kn.height);

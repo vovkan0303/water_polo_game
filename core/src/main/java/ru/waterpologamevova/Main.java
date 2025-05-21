@@ -37,6 +37,8 @@ public class Main extends Game {
     Standart standart;
     Parametri_igri parametri_igri;
     Vibor_poz vibor_poz;
+    Pereriv pereriv;
+    End end;
 
 
 
@@ -65,7 +67,8 @@ public class Main extends Game {
         standart = new Standart(this);
         parametri_igri = new Parametri_igri(this);
         vibor_poz = new Vibor_poz(this);
-
+        pereriv = new Pereriv(this);
+        end = new End(this);
 
         new Thread(() -> {
             createFile("sloznost.txt", "5");

@@ -151,7 +151,7 @@ public class Menu implements Screen {
         font.draw(batch, "Приветствую вас!!!", SCR_WIDTH/3, SCR_HEIGHT-50);
 
         // Отображение времени
-        font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start), SCR_WIDTH-200, SCR_HEIGHT-30);
+        //font.draw(batch, Taim_played_vremya(TimeUtils.millis() - Timer_Start), SCR_WIDTH-200, SCR_HEIGHT-30);
 
         //рисуем кнопку мута
         batch.draw(zv_vkl_kn, btn_mute.x, btn_mute.y, btn_mute.width, btn_mute.height);
